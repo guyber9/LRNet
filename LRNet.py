@@ -39,7 +39,9 @@ class LRNet(nn.Module):
         output = x
         return output
 
+
 class myConv2d(nn.Module):
+
     def __init__(
         self,
         in_channels: int,
@@ -106,7 +108,7 @@ class myConv2d(nn.Module):
                     my_array_2 = [];
                     for n, val_3 in enumerate(val_2):
                         softmax_func = torch.nn.Softmax()
-                        theta = softmax_func(val_3, dim=1)
+                        theta = softmax_func(val_3)
                         values = torch.multinomial(theta, 1) - 1
                         # print("\ntheta: " + str(theta))
                         # print("\nvalues: " + str(values))
@@ -182,7 +184,6 @@ def train(args, model, device, train_loader, optimizer, epoch):
             if args.dry_run:
                 break
 
-
 def test(model, device, test_loader):
     model.eval()
     test_loss = 0
@@ -191,7 +192,8 @@ def test(model, device, test_loader):
         for data, target in test_loader:
             data, target = data.to(device), target.to(device)
             output = model(data)
-            test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            # test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+            test_loss += F.cross_entropy(output, target, reduction='sum').item()  # sum up batch loss
             pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
             correct += pred.eq(target.view_as(pred)).sum().item()
 
