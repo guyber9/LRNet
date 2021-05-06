@@ -4,7 +4,7 @@ import torch
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
-import utils as utils
+import LRNet as my
 
 def main():
     # Training settings
@@ -57,7 +57,7 @@ def main():
     train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
-    model = utils.LRNet().to(device)
+    model = my.LRNet().to(device)
     optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
     # optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
