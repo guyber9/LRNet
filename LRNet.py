@@ -57,9 +57,12 @@ class myConv2d(nn.Module):
         dilation: _size_2_t = 1,
         groups: int = 1,
         clusters: int = 3,
+        test_forward: bool = False,
     ):
         super().__init__()
         self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
+        self.test_forward = test_forward
+
         transposed = True
         if transposed:
             D_0, D_1, D_2, D_3 = out_channels, in_channels, kernel_size, kernel_size
@@ -68,6 +71,7 @@ class myConv2d(nn.Module):
             D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
             weight_theta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, clusters)
         test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
+        self.test_weight = nn.Parameter(test_weight)
         self.weight_theta = nn.Parameter(test_weight)
         self.weight_theta = nn.Parameter(weight_theta)  # nn.Parameter is a Tensor that's a module parameter.
         bias = torch.Tensor(out_channels)
@@ -103,6 +107,9 @@ class myConv2d(nn.Module):
             bound = 1 / math.sqrt(5)
             init.uniform_(self.bias, -bound, bound)
 
+    def test_mode_switch(self) -> None:
+        print("test_mode_switch")
+        self.test_forward = True;
         print("Initializing Test Weights: \n")
         my_array = [];
         for i, val_0 in enumerate(self.weight_theta):
@@ -115,6 +122,7 @@ class myConv2d(nn.Module):
                         softmax_func = torch.nn.Softmax()
                         theta = softmax_func(val_3)
                         values = torch.multinomial(theta, 1) - 1
+                        # values = torch.argmax(theta) - 1
                         # print("\ntheta: " + str(theta))
                         # print("\nvalues: " + str(values))
                         my_array_2.append(values)
@@ -148,28 +156,32 @@ class myConv2d(nn.Module):
         self.weight_theta = nn.Parameter(weight_theta)
 
     def forward(self, input: Tensor) -> Tensor:
-        # E[X] calc
-        prob_mat = self.softmax(self.weight_theta)
-        # prob_mat_clamp = torch.clamp(prob_mat, 0.05, 0.95)
-        mean_tmp = prob_mat * self.discrete_mat
-        mean = torch.sum(mean_tmp, dim=4)
+        if self.test_forward:
+            print("test_forward")
+            return F.conv2d(input, self.test_weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
+        else:
+            # E[X] calc
+            prob_mat = self.softmax(self.weight_theta)
+            # prob_mat_clamp = torch.clamp(prob_mat, 0.05, 0.95)
+            mean_tmp = prob_mat * self.discrete_mat
+            mean = torch.sum(mean_tmp, dim=4)
 
-        # E[x^2]
-        mean_square_tmp = prob_mat * self.discrete_square_mat
-        mean_square = torch.sum(mean_square_tmp, dim=4)
+            # E[x^2]
+            mean_square_tmp = prob_mat * self.discrete_square_mat
+            mean_square = torch.sum(mean_square_tmp, dim=4)
 
-        # E[x] ^ 2
-        mean_pow2 = mean * mean
+            # E[x] ^ 2
+            mean_pow2 = mean * mean
 
-        # Var (E[x^2] - E[x]^2)
-        sigma_square = mean_square - mean_pow2
+            # Var (E[x^2] - E[x]^2)
+            sigma_square = mean_square - mean_pow2
 
-        z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
-        z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
-        epsilon = torch.rand(z1.size())
-        m = z0
-        v = torch.sqrt(z1)
-        return m + epsilon * v
+            z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
+            z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
+            epsilon = torch.rand(z1.size())
+            m = z0
+            v = torch.sqrt(z1)
+            return m + epsilon * v
 
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()

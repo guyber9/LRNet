@@ -42,6 +42,9 @@ def test():
                               transform=transform)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
+    model.conv1.test_mode_switch()
+    model.conv2.test_mode_switch()
+
     my.test(model, device, test_loader)
 
 
