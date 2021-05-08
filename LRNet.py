@@ -17,24 +17,29 @@ class LRNet(nn.Module):
         super(LRNet, self).__init__()
         self.conv1 = myConv2d(1, 32, 5, 1)
         self.conv2 = myConv2d(32, 64, 5, 1)
-        self.dropout1 = nn.Dropout(0.5)
-        self.dropout2 = nn.Dropout(0.5)
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.25)
         self.fc1 = nn.Linear(1024, 512)
         self.fc2 = nn.Linear(512, 10)
+        self.bn1 = nn.BatchNorm2d(32)
+        self.bn2 = nn.BatchNorm2d(64)
 
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
+        # x = self.bn1(x)
         x = F.relu(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         # x = self.dropout1(x)
         x = self.conv2(x) # 64 x 8 x 8
+        x = self.bn2(x)
         x = F.relu(x)
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
-        # x = self.dropout2(x)
+        x = self.dropout2(x)
         x = torch.flatten(x, 1) # 1024
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
+        # output = F.log_softmax(x, dim=1)
         # output = F.softmax(x)
         output = x
         return output
