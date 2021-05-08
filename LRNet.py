@@ -157,7 +157,7 @@ class myConv2d(nn.Module):
 
     def forward(self, input: Tensor) -> Tensor:
         if self.test_forward:
-            print("test_forward")
+            # print("test_forward")
             return F.conv2d(input, self.test_weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         else:
             # E[X] calc
@@ -201,7 +201,13 @@ def train(args, model, device, train_loader, optimizer, epoch):
             if args.dry_run:
                 break
 
-def test(model, device, test_loader):
+def test(model, device, test_loader, test_mode):
+    if test_mode:
+        model.conv1.test_mode_switch()
+        model.conv2.test_mode_switch()
+        print ("evaluating with Test Model Parameters")
+    else:
+        print ("evaluating with Train Model Parameters")
     model.eval()
     test_loss = 0
     correct = 0

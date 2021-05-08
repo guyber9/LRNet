@@ -68,7 +68,8 @@ def main():
     scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         my.train(args, model, device, train_loader, optimizer, epoch)
-        my.test(model, device, test_loader)
+        my.test(model, device, test_loader, False)
+        # my.test(model, device, test_loader, True)
         scheduler.step()
 
     if args.save_model:
