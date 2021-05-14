@@ -80,8 +80,8 @@ def main():
         theta1 = my.find_weights(test_model.conv1.weight, False)
         theta2 = my.find_weights(test_model.conv2.weight, False)
 
-        # model.conv1.initialize_weights(theta1)
-        # model.conv2.initialize_weights(theta2)
+        model.conv1.initialize_weights(theta1)
+        model.conv2.initialize_weights(theta2)
 
         # model.conv1.weight = test_model.conv1.weight
         # model.conv2.weight = test_model.conv2.weight
