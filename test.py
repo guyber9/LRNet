@@ -45,7 +45,7 @@ def test():
     model.conv1.test_mode_switch()
     model.conv2.test_mode_switch()
 
-    my.test(model, device, test_loader)
+    my.test(model, device, test_loader, True)
 
 
 if __name__ == '__main__':
