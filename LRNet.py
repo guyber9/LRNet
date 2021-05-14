@@ -60,13 +60,13 @@ class LRNet(nn.Module):
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
         x = self.bn1(x)
-        x = F.relu(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
+        x = F.relu(x)
         # x = self.dropout1(x)
         x = self.conv2(x) # 64 x 8 x 8
         x = self.bn2(x)
-        x = F.relu(x)
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
+        x = F.relu(x)
         x = self.dropout2(x)
         x = torch.flatten(x, 1) # 1024
         x = self.fc1(x)

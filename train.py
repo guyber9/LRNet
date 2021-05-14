@@ -70,7 +70,7 @@ def main():
         model = my.LRNet().to(device)
 
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
 
     if args.load_pre_trained:
         test_model = my.FPNet().to(device)
