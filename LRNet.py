@@ -200,8 +200,8 @@ class myConv2d(nn.Module):
             # E[X] calc
             prob_mat = self.softmax(self.weight_theta)
             # prob_mat_clamp = torch.clamp(prob_mat, 0.05, 0.95)
-            print (prob_mat.is_cuda)
-            print (self.discrete_mat.is_cuda)
+            if torch.cuda.is_available():
+                prob_mat = prob_mat.to(device='cuda')
             mean_tmp = prob_mat * self.discrete_mat
             mean = torch.sum(mean_tmp, dim=4)
 
