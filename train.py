@@ -76,6 +76,7 @@ def main():
         test_model = my.FPNet().to(device)
         test_model.load_state_dict(torch.load('./mnist_full_prec.pt'))
         test_model.eval()
+        state_dict = torch.load('./mnist_full_prec.pt')
 
         theta1 = my.find_weights(test_model.conv1.weight, False)
         theta2 = my.find_weights(test_model.conv2.weight, False)
@@ -85,6 +86,13 @@ def main():
 
         # model.conv1.weight = test_model.conv1.weight
         # model.conv2.weight = test_model.conv2.weight
+
+        # model.conv1.bias.copy_(state_dict['conv1.bias'])
+        # model.conv2.bias.copy_(state_dict['conv2.bias'])
+        # model.fc1.weight.copy_(state_dict['fc1.weight'])
+        # model.fc1.bias.copy_(state_dict['fc1.bias'])
+        # model.fc2.weight.copy_(state_dict['fc2.weight'])
+        # model.fc2.bias.copy_(state_dict['fc2.bias'])
 
         model.conv1.bias = test_model.conv1.bias
         model.conv2.bias = test_model.conv2.bias

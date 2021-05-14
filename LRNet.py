@@ -59,7 +59,7 @@ class LRNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
-        # x = self.bn1(x)
+        x = self.bn1(x)
         x = F.relu(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         # x = self.dropout1(x)
@@ -276,8 +276,9 @@ def find_weights(w, my_prints=False):
 
     p_max = 0.95
     p_min = 0.05
-    w_norm = w / torch.sqrt(torch.var(w))
-    e_alpha = p_max - ((p_max - p_min) * w_norm)
+    # w_norm = w / torch.sqrt(torch.var(w))
+    w_norm = w / torch.std(w)
+    e_alpha = p_max - ((p_max - p_min) * torch.abs(w_norm))
     if my_prints:
         print("e_alpha: " + str(e_alpha))
     e_alpha = torch.clamp(e_alpha, p_min, p_max)
@@ -291,7 +292,7 @@ def find_weights(w, my_prints=False):
         print("e_betta: " + str(e_betta))
     e_betta = torch.clamp(e_betta, p_min, p_max)
     if my_prints:
-        print("alpha.clip: " + str(e_betta))
+        print("e_betta.clip: " + str(e_betta))
 
     alpha_prob = torch.log(e_alpha)
     betta_prob = torch.log(e_betta)
