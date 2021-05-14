@@ -29,6 +29,11 @@ def main():
                         help='how many batches to wait before logging training status')
     parser.add_argument('--save-model', action='store_true', default=True,
                         help='For Saving the current Model')
+    parser.add_argument('--full-prec', action='store_true', default=False,
+                        help='For Training Full Precision Model')
+    parser.add_argument('--load-pre-trained', action='store_true', default=False,
+                        help='For Loading Params from Trained Full Precision Model')
+
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -57,9 +62,46 @@ def main():
     train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
-    model = my.LRNet().to(device)
+    if args.full_prec:
+        print ("Training Net")
+        model = my.FPNet().to(device)
+    else:
+        print ("Training LRNet")
+        model = my.LRNet().to(device)
+
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
+
+    if args.load_pre_trained:
+        test_model = my.FPNet().to(device)
+        test_model.load_state_dict(torch.load('./mnist_full_prec.pt'))
+        test_model.eval()
+
+        theta1 = my.find_weights(test_model.conv1.weight, False)
+        theta2 = my.find_weights(test_model.conv2.weight, False)
+
+        # model.conv1.initialize_weights(theta1)
+        # model.conv2.initialize_weights(theta2)
+
+        # model.conv1.weight = test_model.conv1.weight
+        # model.conv2.weight = test_model.conv2.weight
+
+        model.conv1.bias = test_model.conv1.bias
+        model.conv2.bias = test_model.conv2.bias
+        model.fc1.weight = test_model.fc1.weight
+        model.fc1.bias = test_model.fc1.bias
+        model.fc2.weight = test_model.fc2.weight
+        model.fc2.bias = test_model.fc2.bias
+
+        # model.bn1.bias = test_model.bn1.bias
+        # model.bn1.weight = test_model.bn1.weight
+        # model.bn1.running_mean = test_model.bn1.running_mean
+        # model.bn1.running_var = test_model.bn1.running_var
+
+        model.bn2.bias = test_model.bn2.bias
+        model.bn2.weight = test_model.bn2.weight
+        model.bn2.running_mean = test_model.bn2.running_mean
+        model.bn2.running_var = test_model.bn2.running_var
 
     print ("###################################")
     print ("training..")
@@ -72,7 +114,9 @@ def main():
         # my.test(model, device, test_loader, True)
         scheduler.step()
 
-    if args.save_model:
+    if args.full_prec:
+        torch.save(model.state_dict(), "mnist_full_prec.pt")
+    else:
         torch.save(model.state_dict(), "mnist_cnn.pt")
 
 if __name__ == '__main__':

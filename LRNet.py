@@ -10,6 +10,39 @@ from torch.nn.modules.conv import _single, _pair, _triple, _reverse_repeat_tuple
 import numpy as np
 from torch.nn.common_types import _size_1_t, _size_2_t, _size_3_t
 
+class FPNet(nn.Module):
+
+    def __init__(self):
+        super(FPNet, self).__init__()
+        self.conv1 = nn.Conv2d(1, 32, 5, 1)
+        self.conv2 = nn.Conv2d(32, 64, 5, 1)
+        self.dropout1 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(1024, 512)
+        self.fc2 = nn.Linear(512, 10)
+        self.bn1 = nn.BatchNorm2d(32)
+        self.bn2 = nn.BatchNorm2d(64)
+
+    def forward(self, x):
+        x = self.conv1(x)  # 32 x 24 x 24
+        x = self.bn1(x)
+        x = F.max_pool2d(x, 2) # 32 x 12 x 12
+        x = F.relu(x)
+        # x = self.dropout1(x)
+        x = self.conv2(x) # 64 x 8 x 8
+        x = self.bn2(x)
+        x = F.max_pool2d(x, 2) # 64 x 4 x 4
+        x = F.relu(x)
+        x = torch.flatten(x, 1) # 1024
+        x = self.dropout2(x)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.fc2(x)
+        # output = F.log_softmax(x, dim=1)
+        # output = F.softmax(x)
+        output = x
+        return output
+
 
 class LRNet(nn.Module):
 
@@ -107,6 +140,10 @@ class myConv2d(nn.Module):
             bound = 1 / math.sqrt(5)
             init.uniform_(self.bias, -bound, bound)
 
+    def initialize_weights(self, theta) -> None:
+        print ("Initialize Weights")
+        self.weight_theta = nn.Parameter(torch.tensor(theta, dtype=torch.float32))
+
     def test_mode_switch(self) -> None:
         print("test_mode_switch")
         self.test_forward = True;
@@ -179,6 +216,8 @@ class myConv2d(nn.Module):
             z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
             z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
             epsilon = torch.rand(z1.size())
+            if torch.cuda.is_available():
+                epsilon = epsilon.to(device='cuda')
             m = z0
             v = torch.sqrt(z1)
             return m + epsilon * v
@@ -226,3 +265,50 @@ def test(model, device, test_loader, test_mode):
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
 
+
+def find_weights(w, my_prints=False):
+    if my_prints:
+        print("w: " + str(w))
+        print(w.size())
+        print(type(w))
+
+    # e^alpha + e^betta + e^gamma = 1
+
+    p_max = 0.95
+    p_min = 0.05
+    w_norm = w / torch.sqrt(torch.var(w))
+    e_alpha = p_max - ((p_max - p_min) * w_norm)
+    if my_prints:
+        print("e_alpha: " + str(e_alpha))
+    e_alpha = torch.clamp(e_alpha, p_min, p_max)
+    if my_prints:
+        print("e_alpha.clip: " + str(e_alpha))
+        print("e_alpha.size: " + str(e_alpha.size()))
+
+    # betta = 0.5 * (1 + (w_norm / (1 - alpha)))
+    e_betta = 0.5 * (w_norm - e_alpha + 1)
+    if my_prints:
+        print("e_betta: " + str(e_betta))
+    e_betta = torch.clamp(e_betta, p_min, p_max)
+    if my_prints:
+        print("alpha.clip: " + str(e_betta))
+
+    alpha_prob = torch.log(e_alpha)
+    betta_prob = torch.log(e_betta)
+    gamma_prob = torch.log(torch.clamp((1 - e_alpha - e_betta), p_min, p_max))
+    if my_prints:
+        print("alpha_prob: " + str(alpha_prob))
+        print("betta_prob: " + str(betta_prob))
+        print("gamma_prob: " + str(gamma_prob))
+    alpha_prob = alpha_prob.detach().numpy()
+    betta_prob = betta_prob.detach().numpy()
+    gamma_prob = gamma_prob.detach().numpy()
+    alpha_prob = np.expand_dims(alpha_prob, axis=-1)
+    betta_prob = np.expand_dims(betta_prob, axis=-1)
+    gamma_prob = np.expand_dims(gamma_prob, axis=-1)
+    theta = np.concatenate((alpha_prob, betta_prob, gamma_prob), axis=4)
+    if my_prints:
+        print("theta: " + str(theta))
+        print("theta.shape: " + str(np.shape(theta)))
+    # exit(1)
+    return theta
