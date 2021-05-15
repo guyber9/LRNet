@@ -132,12 +132,12 @@ class myConv2d(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
-        fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.discrete_mat)
         # self.reset_train_parameters()
         init.kaiming_uniform_(self.weight_theta, a=math.sqrt(5))
         # init.uniform_(self.weight_theta, -1, 1)
         # init.constant_(self.weight_theta, 1)
         if self.bias is not None:
+            fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.discrete_mat)
             bound = 1 / math.sqrt(fan_in)
             init.uniform_(self.bias, -bound, bound)
 

@@ -77,7 +77,10 @@ def main():
 
     if args.load_pre_trained:
         test_model = my.FPNet().to(device)
-        test_model.load_state_dict(torch.load('./mnist_full_prec.pt'))
+        if use_cuda:
+            test_model.load_state_dict(torch.load('./mnist_full_prec.pt'))
+        else:
+            test_model.load_state_dict(torch.load('./mnist_full_prec_no_cuda.pt'))
         test_model.eval()
         state_dict = torch.load('./mnist_full_prec.pt')
 
@@ -123,7 +126,10 @@ def main():
         scheduler.step()
 
     if args.full_prec:
-        torch.save(model.state_dict(), "mnist_full_prec.pt")
+        if use_cuda:
+            torch.save(model.state_dict(), "mnist_full_prec.pt")
+        else:
+            torch.save(model.state_dict(), "mnist_full_prec_no_cuda.pt")
     else:
         torch.save(model.state_dict(), "mnist_cnn.pt")
 
