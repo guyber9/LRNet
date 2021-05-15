@@ -25,7 +25,7 @@ class FPNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
-        x = self.bn1(x)
+        # x = self.bn1(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
         # x = self.dropout1(x)
