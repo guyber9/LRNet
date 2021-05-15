@@ -239,7 +239,6 @@ def train(args, model, device, train_loader, optimizer, epoch):
             torch.autograd.set_detect_anomaly(True)
             loss.backward(retain_graph=True)
         else:
-            torch.autograd.set_detect_anomaly()
             loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
