@@ -67,8 +67,8 @@ class LRNet(nn.Module):
         x = self.bn2(x)
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
         x = F.relu(x)
-        x = self.dropout2(x)
         x = torch.flatten(x, 1) # 1024
+        x = self.dropout2(x)
         x = self.fc1(x)
         x = F.relu(x)
         x = self.fc2(x)
@@ -226,14 +226,21 @@ class myConv2d(nn.Module):
 
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
+    weight_decay = 1e-4
+    probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
         # loss = F.nll_loss(output, target)
-        loss = F.cross_entropy(output, target) # <- was better
-        torch.autograd.set_detect_anomaly(True)
-        loss.backward(retain_graph=True)
+        loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
+               + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
+        if args.debug_mode:
+            torch.autograd.set_detect_anomaly(True)
+            loss.backward(retain_graph=True)
+        else:
+            torch.autograd.set_detect_anomaly()
+            loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(

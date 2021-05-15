@@ -9,14 +9,14 @@ import LRNet as my
 def main():
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
-    parser.add_argument('--batch-size', type=int, default=64, metavar='N',
+    parser.add_argument('--batch-size', type=int, default=256, metavar='N',
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
                         help='input batch size for testing (default: 1000)')
     parser.add_argument('--epochs', type=int, default=1, metavar='N',
-                        help='number of epochs to train (default: 14)')
+                        help='number of epochs to train (default: 1)')
     parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
-                        help='learning rate (default: 1.0)')
+                        help='learning rate (default: 0.01)')
     parser.add_argument('--gamma', type=float, default=0.7, metavar='M',
                         help='Learning rate step gamma (default: 0.7)')
     parser.add_argument('--no-cuda', action='store_true', default=False,
@@ -33,6 +33,8 @@ def main():
                         help='For Training Full Precision Model')
     parser.add_argument('--load-pre-trained', action='store_true', default=False,
                         help='For Loading Params from Trained Full Precision Model')
+    parser.add_argument('--debug-mode', action='store_true', default=False,
+                        help='For Debug Mode')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -69,8 +71,8 @@ def main():
         print ("Training LRNet")
         model = my.LRNet().to(device)
 
-    # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
+    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
+    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
 
     if args.load_pre_trained:
         test_model = my.FPNet().to(device)
@@ -83,9 +85,6 @@ def main():
 
         model.conv1.initialize_weights(theta1)
         model.conv2.initialize_weights(theta2)
-
-        # model.conv1.weight = test_model.conv1.weight
-        # model.conv2.weight = test_model.conv2.weight
 
         # model.conv1.bias.copy_(state_dict['conv1.bias'])
         # model.conv2.bias.copy_(state_dict['conv2.bias'])
