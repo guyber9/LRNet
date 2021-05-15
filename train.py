@@ -82,7 +82,7 @@ def main():
         else:
             test_model.load_state_dict(torch.load('./mnist_full_prec_no_cuda.pt'))
         test_model.eval()
-        state_dict = torch.load('./mnist_full_prec.pt')
+        # state_dict = torch.load('./mnist_full_prec.pt')
 
         theta1 = my.find_weights(test_model.conv1.weight, False)
         theta2 = my.find_weights(test_model.conv2.weight, False)
@@ -97,22 +97,22 @@ def main():
         # model.fc2.weight.copy_(state_dict['fc2.weight'])
         # model.fc2.bias.copy_(state_dict['fc2.bias'])
 
-        model.conv1.bias = test_model.conv1.bias
-        model.conv2.bias = test_model.conv2.bias
-        model.fc1.weight = test_model.fc1.weight
-        model.fc1.bias = test_model.fc1.bias
-        model.fc2.weight = test_model.fc2.weight
-        model.fc2.bias = test_model.fc2.bias
-
-        model.bn1.bias = test_model.bn1.bias
-        model.bn1.weight = test_model.bn1.weight
-        model.bn1.running_mean = test_model.bn1.running_mean
-        model.bn1.running_var = test_model.bn1.running_var
-
-        model.bn2.bias = test_model.bn2.bias
-        model.bn2.weight = test_model.bn2.weight
-        model.bn2.running_mean = test_model.bn2.running_mean
-        model.bn2.running_var = test_model.bn2.running_var
+        # model.conv1.bias = test_model.conv1.bias
+        # model.conv2.bias = test_model.conv2.bias
+        # model.fc1.weight = test_model.fc1.weight
+        # model.fc1.bias = test_model.fc1.bias
+        # model.fc2.weight = test_model.fc2.weight
+        # model.fc2.bias = test_model.fc2.bias
+        #
+        # model.bn1.bias = test_model.bn1.bias
+        # model.bn1.weight = test_model.bn1.weight
+        # model.bn1.running_mean = test_model.bn1.running_mean
+        # model.bn1.running_var = test_model.bn1.running_var
+        #
+        # model.bn2.bias = test_model.bn2.bias
+        # model.bn2.weight = test_model.bn2.weight
+        # model.bn2.running_mean = test_model.bn2.running_mean
+        # model.bn2.running_var = test_model.bn2.running_var
 
     print ("###################################")
     print ("training..")
