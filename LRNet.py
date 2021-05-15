@@ -25,7 +25,7 @@ class FPNet(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
-        # x = self.bn1(x)
+        x = self.bn1(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
         # x = self.dropout1(x)
@@ -132,12 +132,13 @@ class myConv2d(nn.Module):
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
+        fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.discrete_mat)
         # self.reset_train_parameters()
         init.kaiming_uniform_(self.weight_theta, a=math.sqrt(5))
         # init.uniform_(self.weight_theta, -1, 1)
         # init.constant_(self.weight_theta, 1)
         if self.bias is not None:
-            bound = 1 / math.sqrt(5)
+            bound = 1 / math.sqrt(fan_in)
             init.uniform_(self.bias, -bound, bound)
 
     def initialize_weights(self, theta) -> None:
@@ -232,9 +233,10 @@ def train(args, model, device, train_loader, optimizer, epoch):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
-        # loss = F.nll_loss(output, target)
-        loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
-               + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
+        # loss = F.nll_loss(output, target) 
+        loss = F.cross_entropy(output, target)
+        #loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
+        #       + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
         if args.debug_mode:
             torch.autograd.set_detect_anomaly(True)
             loss.backward(retain_graph=True)

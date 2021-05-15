@@ -71,8 +71,9 @@ def main():
         print ("Training LRNet")
         model = my.LRNet().to(device)
 
-    optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
+    # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
     # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     if args.load_pre_trained:
         test_model = my.FPNet().to(device)
@@ -100,10 +101,10 @@ def main():
         model.fc2.weight = test_model.fc2.weight
         model.fc2.bias = test_model.fc2.bias
 
-        # model.bn1.bias = test_model.bn1.bias
-        # model.bn1.weight = test_model.bn1.weight
-        # model.bn1.running_mean = test_model.bn1.running_mean
-        # model.bn1.running_var = test_model.bn1.running_var
+        model.bn1.bias = test_model.bn1.bias
+        model.bn1.weight = test_model.bn1.weight
+        model.bn1.running_mean = test_model.bn1.running_mean
+        model.bn1.running_var = test_model.bn1.running_var
 
         model.bn2.bias = test_model.bn2.bias
         model.bn2.weight = test_model.bn2.weight
