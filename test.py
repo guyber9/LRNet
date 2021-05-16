@@ -36,17 +36,26 @@ def test():
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
     ])
-    # dataset1 = datasets.MNIST('../data', train=True, download=True,
-    #                           transform=transform)
+    dataset1 = datasets.MNIST('../data', train=True, download=True,
+                              transform=transform)
     dataset2 = datasets.MNIST('../data', train=False,
                               transform=transform)
     train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
+    print ("Original Trained Model (no ternary)")
+    print ("test Data Set")
+    my.test(model, device, test_loader, True)
+    print ("train Data Set")
+    my.test(model, device, train_loader, True)
+
     model.conv1.test_mode_switch()
     model.conv2.test_mode_switch()
 
+    print ("Ternary Model")
+    print ("test Data Set")
     my.test(model, device, test_loader, True)
+    print ("train Data Set")
     my.test(model, device, train_loader, True)
 
 
