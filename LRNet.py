@@ -165,7 +165,7 @@ class myConv2d(nn.Module):
                             np_theta = theta.detach().cpu().clone().numpy().tolist()
                         else:
                             np_theta = theta.detach().numpy().tolist()
-                        values_arr = np.random.default_rng().multinomial(1, np_theta)
+                        values_arr = np.random.default_rng().multinomial(10000, np_theta)
                         values = np.nanargmax(values_arr) - 1
 
                         my_array_2.append(values)
