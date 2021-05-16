@@ -173,6 +173,8 @@ class myConv2d(nn.Module):
                 my_array_0.append(my_array_1)
             my_array.append(my_array_0)
         test_weight = torch.tensor(my_array, dtype=torch.float32)
+        if torch.cuda.is_available():
+            test_weight = test_weight.to(device='cuda')
         self.test_weight = nn.Parameter(test_weight)
 
     def reset_train_parameters(self) -> None:
@@ -201,7 +203,6 @@ class myConv2d(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         if self.test_forward:
             # print("test_forward")
-            self.test_weight = self.test_weight.to(device='cuda')
             return F.conv2d(input, self.test_weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         else:
             # E[X] calc
