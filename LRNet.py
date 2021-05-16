@@ -201,6 +201,7 @@ class myConv2d(nn.Module):
     def forward(self, input: Tensor) -> Tensor:
         if self.test_forward:
             # print("test_forward")
+            self.test_weight = self.test_weight.to(device='cuda')
             return F.conv2d(input, self.test_weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         else:
             # E[X] calc
