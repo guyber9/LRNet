@@ -161,8 +161,10 @@ class myConv2d(nn.Module):
                         theta = softmax_func(val_3)
                         # values = torch.multinomial(theta, 1) - 1
                         # values = torch.argmax(theta) - 1
-
-                        np_theta = theta.detach().numpy().tolist()
+                        if torch.cuda.is_available():
+                            np_theta = theta.detach().cpu().clone().numpy().tolist()
+                        else:
+                            np_theta = theta.detach().numpy().tolist()
                         values_arr = np.random.default_rng().multinomial(1, np_theta)
                         values = np.nanargmax(values_arr) - 1
 
