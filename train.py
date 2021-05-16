@@ -118,7 +118,7 @@ def main():
     print ("training..")
     print ("num of epochs: " + str(args.epochs))
     print ("###################################")
-    scheduler = StepLR(optimizer, step_size=1, gamma=args.gamma)
+    scheduler = StepLR(optimizer, step_size=30, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         my.train(args, model, device, train_loader, optimizer, epoch)
         my.test(model, device, test_loader, False)
