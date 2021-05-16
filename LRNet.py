@@ -149,17 +149,16 @@ class myConv2d(nn.Module):
         print("test_mode_switch")
         self.test_forward = True;
         print("Initializing Test Weights: \n")
-        my_array = [];
+        my_array = []
+        softmax_func = torch.nn.Softmax()
         for i, val_0 in enumerate(self.weight_theta):
-            my_array_0 = [];
+            my_array_0 = []
             for j, val_1 in enumerate(val_0):
-                my_array_1 = [];
+                my_array_1 = []
                 for m, val_2 in enumerate(val_1):
-                    my_array_2 = [];
+                    my_array_2 = []
                     for n, val_3 in enumerate(val_2):
-                        softmax_func = torch.nn.Softmax()
-
-                        # theta = softmax_func(val_3)
+                        theta = softmax_func(val_3)
                         # values = torch.multinomial(theta, 1) - 1
                         # values = torch.argmax(theta) - 1
 

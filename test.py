@@ -46,7 +46,9 @@ def test():
     train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
+    print ("###################################")
     print ("Original Trained Model (no ternary)")
+    print ("###################################")
     print ("test Data Set")
     my.test(model, device, test_loader, True)
     print ("train Data Set")
@@ -55,7 +57,9 @@ def test():
     model.conv1.test_mode_switch()
     model.conv2.test_mode_switch()
 
+    print ("###################################")
     print ("Ternary Model")
+    print ("###################################")
     print ("test Data Set")
     my.test(model, device, test_loader, True)
     print ("train Data Set")
