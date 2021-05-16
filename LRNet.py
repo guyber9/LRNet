@@ -158,11 +158,15 @@ class myConv2d(nn.Module):
                     my_array_2 = [];
                     for n, val_3 in enumerate(val_2):
                         softmax_func = torch.nn.Softmax()
-                        theta = softmax_func(val_3)
-                        values = torch.multinomial(theta, 1) - 1
+
+                        # theta = softmax_func(val_3)
+                        # values = torch.multinomial(theta, 1) - 1
                         # values = torch.argmax(theta) - 1
-                        # print("\ntheta: " + str(theta))
-                        # print("\nvalues: " + str(values))
+
+                        np_theta = theta.detach().numpy().tolist()
+                        values_arr = np.random.default_rng().multinomial(1, np_theta)
+                        values = np.nanargmax(values_arr) - 1
+
                         my_array_2.append(values)
                     my_array_1.append(my_array_2)
                 my_array_0.append(my_array_1)
@@ -252,8 +256,8 @@ def train(args, model, device, train_loader, optimizer, epoch):
 
 def test(model, device, test_loader, test_mode):
     if test_mode:
-        model.conv1.test_mode_switch()
-        model.conv2.test_mode_switch()
+        # model.conv1.test_mode_switch()
+        # model.conv2.test_mode_switch()
         print ("evaluating with Test Model Parameters")
     else:
         print ("evaluating with Train Model Parameters")

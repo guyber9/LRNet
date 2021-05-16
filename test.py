@@ -40,12 +40,14 @@ def test():
     #                           transform=transform)
     dataset2 = datasets.MNIST('../data', train=False,
                               transform=transform)
+    train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
     model.conv1.test_mode_switch()
     model.conv2.test_mode_switch()
 
     my.test(model, device, test_loader, True)
+    my.test(model, device, train_loader, True)
 
 
 if __name__ == '__main__':
