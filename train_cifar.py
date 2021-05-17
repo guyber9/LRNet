@@ -148,16 +148,23 @@ def main():
         test_kwargs.update(cuda_kwargs)
 
     print('Reading Database..')
-    transform=transforms.Compose([
+    transform_train = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,))
-        ])
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
+
+    transform_test = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
+    ])
 
     dataset1 = datasets.CIFAR10(
-        root='../data', train=True, download=True, transform=transform)
+        root='../data', train=True, download=True, transform=transform_train)
 
     dataset2 = datasets.CIFAR10(
-        root='../data', train=False, download=True, transform=transform)
+        root='../data', train=False, download=True, transform=transform_test)
 
     train_loader = torch.utils.data.DataLoader(dataset1, **train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
@@ -221,7 +228,8 @@ def main():
     for epoch in range(1, args.epochs + 1):
         my.train(args, model, device, train_loader, optimizer, epoch)
         my.test(model, device, test_loader, False)
-        if epoch == my_step_size:
+        if (epoch % 20) == 0:
+            print("Accuracy on train data:")
             my.test(model, device, train_loader, False)
         # my.test(model, device, test_loader, True)
         scheduler.step()
