@@ -164,8 +164,8 @@ def main():
         model = LRNet().to(device)
 
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
-    # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
+    # optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     if args.load_pre_trained:
         test_model = my.FPNet_CIFAR10().to(device)
