@@ -24,8 +24,9 @@ class FPNet_CIFAR10(nn.Module):
         self.bn4 = nn.BatchNorm2d(256)
         self.bn5 = nn.BatchNorm2d(512)
         self.bn6 = nn.BatchNorm2d(512)
-        self.dropout1 = nn.Dropout(0.5)
-        self.dropout2 = nn.Dropout(0.5)
+        self.dropout1 = nn.Dropout(0.2)
+        self.dropout2 = nn.Dropout(0.2)
+        self.dropout3 = nn.Dropout(0.2)
         self.fc1 = nn.Linear(8192, 1024)
         self.fc2 = nn.Linear(1024, 10)
 
@@ -37,6 +38,8 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn2(x)
         x = F.max_pool2d(x, 2) # 128 x 16 x 16
         x = F.relu(x)
+        x = self.dropout1(x)
+
 
         x = self.conv3(x)  # 256 x 16 x 16
         x = self.bn3(x)
@@ -45,6 +48,7 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn4(x)
         x = F.max_pool2d(x, 2) # 256 x 8 x 8
         x = F.relu(x)
+        x = self.dropout2(x)
 
         x = self.conv5(x)  # 512 x 8 x 8
         x = self.bn5(x)
@@ -53,8 +57,10 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn6(x)
         x = F.max_pool2d(x, 2) # 512 x 4 x 4 (= 8192)
         x = F.relu(x)
+        x = self.dropout3(x)
+
         x = torch.flatten(x, 1) # 8192
-        x = self.dropout2(x)
+        # x = self.dropout2(x)
         x = self.fc1(x)  # 8192 -> 1024
         x = F.relu(x)
         x = self.fc2(x) # 1024 -> 10
@@ -210,10 +216,13 @@ def main():
     print ("training..")
     print ("num of epochs: " + str(args.epochs))
     print ("###################################")
-    scheduler = StepLR(optimizer, step_size=30, gamma=args.gamma)
+    my_step_size = 30
+    scheduler = StepLR(optimizer, step_size=my_step_size, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         my.train(args, model, device, train_loader, optimizer, epoch)
         my.test(model, device, test_loader, False)
+        if epoch == my_step_size:
+            my.test(model, device, train_loader, False)
         # my.test(model, device, test_loader, True)
         scheduler.step()
 
