@@ -68,36 +68,61 @@ class FPNet_CIFAR10(nn.Module):
         return output
 
 
-class LRNet(nn.Module):
+class LRNet_CIFAR10(nn.Module):
 
     def __init__(self):
-        super(LRNet, self).__init__()
-        self.conv1 = my.myConv2d(1, 32, 5, 1)
-        self.conv2 = my.myConv2d(32, 64, 5, 1)
-        self.dropout1 = nn.Dropout(0.25)
-        self.dropout2 = nn.Dropout(0.25)
-        self.fc1 = nn.Linear(1024, 512)
-        self.fc2 = nn.Linear(512, 10)
-        self.bn1 = nn.BatchNorm2d(32)
-        self.bn2 = nn.BatchNorm2d(64)
+        super(LRNet_CIFAR10, self).__init__()
+        self.conv1 = my.myConv2d(3, 128, 3, 1, padding=1)
+        self.conv2 = my.myConv2d(128, 128, 3, 1, padding=1)
+        self.conv3 = my.myConv2d(128, 256, 3, 1, padding=1)
+        self.conv4 = my.myConv2d(256, 256, 3, 1, padding=1)
+        self.conv5 = my.myConv2d(256, 512, 3, 1, padding=1)
+        self.conv6 = my.myConv2d(512, 512, 3, 1, padding=1)
+        self.bn1 = nn.BatchNorm2d(128)
+        self.bn2 = nn.BatchNorm2d(128)
+        self.bn3 = nn.BatchNorm2d(256)
+        self.bn4 = nn.BatchNorm2d(256)
+        self.bn5 = nn.BatchNorm2d(512)
+        self.bn6 = nn.BatchNorm2d(512)
+        self.dropout1 = nn.Dropout(0.2)
+        self.dropout2 = nn.Dropout(0.2)
+        self.dropout3 = nn.Dropout(0.2)
+        self.fc1 = nn.Linear(8192, 1024)
+        self.fc2 = nn.Linear(1024, 10)
 
     def forward(self, x):
-        x = self.conv1(x)  # 32 x 24 x 24
+        x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
         x = self.bn1(x)
-        x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
-        # x = self.dropout1(x)
-        x = self.conv2(x) # 64 x 8 x 8
+        x = self.conv2(x)  # 128 x 32 x 32
         x = self.bn2(x)
-        x = F.max_pool2d(x, 2) # 64 x 4 x 4
+        x = F.max_pool2d(x, 2)  # 128 x 16 x 16
         x = F.relu(x)
-        x = torch.flatten(x, 1) # 1024
+        x = self.dropout1(x)
+
+        x = self.conv3(x)  # 256 x 16 x 16
+        x = self.bn3(x)
+        x = F.relu(x)
+        x = self.conv4(x)  # 256 x 16 x 16
+        x = self.bn4(x)
+        x = F.max_pool2d(x, 2)  # 256 x 8 x 8
+        x = F.relu(x)
         x = self.dropout2(x)
-        x = self.fc1(x)
+
+        x = self.conv5(x)  # 512 x 8 x 8
+        x = self.bn5(x)
         x = F.relu(x)
-        x = self.fc2(x)
-        # output = F.log_softmax(x, dim=1)
-        # output = F.softmax(x)
+        x = self.conv6(x)  # 512 x 8 x 8
+        x = self.bn6(x)
+        x = F.max_pool2d(x, 2)  # 512 x 4 x 4 (= 8192)
+        x = F.relu(x)
+        x = self.dropout3(x)
+
+        x = torch.flatten(x, 1)  # 8192
+        # x = self.dropout2(x)
+        x = self.fc1(x)  # 8192 -> 1024
+        x = F.relu(x)
+        x = self.fc2(x)  # 1024 -> 10
         output = x
         return output
 
@@ -174,7 +199,7 @@ def main():
         model = FPNet_CIFAR10().to(device)
     else:
         print ("Training LRNet")
-        model = LRNet().to(device)
+        model = LRNet_CIFAR10().to(device)
 
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
@@ -191,9 +216,17 @@ def main():
 
         theta1 = my.find_weights(test_model.conv1.weight, False)
         theta2 = my.find_weights(test_model.conv2.weight, False)
+        theta3 = my.find_weights(test_model.conv3.weight, False)
+        theta4 = my.find_weights(test_model.conv4.weight, False)
+        theta5 = my.find_weights(test_model.conv5.weight, False)
+        theta6 = my.find_weights(test_model.conv6.weight, False)
 
         model.conv1.initialize_weights(theta1)
         model.conv2.initialize_weights(theta2)
+        model.conv3.initialize_weights(theta3)
+        model.conv4.initialize_weights(theta4)
+        model.conv5.initialize_weights(theta5)
+        model.conv6.initialize_weights(theta6)
 
         # model.conv1.bias.copy_(state_dict['conv1.bias'])
         # model.conv2.bias.copy_(state_dict['conv2.bias'])
@@ -228,7 +261,7 @@ def main():
     for epoch in range(1, args.epochs + 1):
         my.train(args, model, device, train_loader, optimizer, epoch)
         my.test(model, device, test_loader, False)
-        if (epoch % 20) == 0:
+        if ((epoch % 20) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
             my.test(model, device, train_loader, False)
         # my.test(model, device, test_loader, True)
