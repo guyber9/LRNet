@@ -31,7 +31,8 @@ def test():
         test_kwargs.update(cuda_kwargs)
 
     model = my.LRNet().to(device)
-    model.load_state_dict(torch.load('saved_model/mnist_ternary_97.pt')) # ('./mnist_cnn.pt'))
+    model.load_state_dict(torch.load('./mnist_cnn.pt'))
+    # model.load_state_dict(torch.load('saved_model/mnist_ternary_97.pt'))
     model.eval()
 
     print('Reading Database..')

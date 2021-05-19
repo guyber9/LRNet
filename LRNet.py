@@ -17,7 +17,7 @@ class FPNet(nn.Module):
         self.conv1 = nn.Conv2d(1, 32, 5, 1)
         self.conv2 = nn.Conv2d(32, 64, 5, 1)
         self.dropout1 = nn.Dropout(0.5)
-        self.dropout2 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.1)
         self.fc1 = nn.Linear(1024, 512)
         self.fc2 = nn.Linear(512, 10)
         self.bn1 = nn.BatchNorm2d(32)
@@ -234,16 +234,16 @@ class myConv2d(nn.Module):
 
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
-    weight_decay = 1e-4
+    weight_decay = 1e-5
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
         # loss = F.nll_loss(output, target) 
-        loss = F.cross_entropy(output, target)
-        #loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
-        #       + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
+        # loss = F.cross_entropy(output, target)
+        loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
+              + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
         if args.debug_mode:
             torch.autograd.set_detect_anomaly(True)
             loss.backward(retain_graph=True)
