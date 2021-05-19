@@ -35,18 +35,18 @@ def test():
     model.load_state_dict(torch.load('./cifar10_full_prec.pt'))
     model.eval()
 
-    transform_test = transforms.Compose([
+    transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
     ])
 
-    dataset1 = datasets.MNIST('../data', train=True, download=True,
+    dataset1 = datasets.CIFAR10('../data', train=True, download=True,
                               transform=transform)
-    dataset2 = datasets.MNIST('../data', train=False,
+    dataset2 = datasets.CIFAR10('../data', train=False,
                               transform=transform)
 
-    train_loader = torch.utils.data.DataLoader(dataset1,**transform_test)
-    test_loader = torch.utils.data.DataLoader(dataset2, **transform_test)
+    train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
+    test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
     print ("###################################")
     print ("Original Trained Model (no ternary)")
