@@ -206,7 +206,7 @@ def main():
     # optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
     if args.load_pre_trained:
-        test_model = my.FPNet_CIFAR10().to(device)
+        test_model = FPNet_CIFAR10().to(device)
         if use_cuda:
             test_model.load_state_dict(torch.load('./cifar10_full_prec.pt'))
         else:
@@ -256,7 +256,7 @@ def main():
     print ("training..")
     print ("num of epochs: " + str(args.epochs))
     print ("###################################")
-    my_step_size = 30
+    my_step_size = 50 
     scheduler = StepLR(optimizer, step_size=my_step_size, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         my.train(args, model, device, train_loader, optimizer, epoch)
