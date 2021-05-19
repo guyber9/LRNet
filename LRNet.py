@@ -357,6 +357,8 @@ class mySigmConv2d(nn.Module):
             # print (prob_betta)
 
             prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
+            if torch.cuda.is_available():
+                prob_mat = prob_mat.to(device='cuda')
 
             # print("prob_mat: " + str(prob_mat))
 
@@ -377,8 +379,6 @@ class mySigmConv2d(nn.Module):
             # print("mean_tmp: " + str(mean_tmp))
             # print("mean_square_tmp: " + str(mean_square_tmp))
             # print("mean_pow2: " + str(mean_pow2))
-
-            0.0975 - 2.9156e+00
 
             sigma_square = mean_square - mean_pow2
 
