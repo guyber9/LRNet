@@ -86,11 +86,17 @@ def main():
         test_model.eval()
         # state_dict = torch.load('./mnist_full_prec.pt')
 
-        theta1 = my.find_weights(test_model.conv1.weight, False)
-        theta2 = my.find_weights(test_model.conv2.weight, False)
+        # theta1 = my.find_weights(test_model.conv1.weight, False)
+        # theta2 = my.find_weights(test_model.conv2.weight, False)
 
-        model.conv1.initialize_weights(theta1)
-        model.conv2.initialize_weights(theta2)
+        # model.conv1.initialize_weights(theta1)
+        # model.conv2.initialize_weights(theta2)
+
+        alpha1, betta1 = my.find_sigm_weights(test_model.conv1.weight, False)
+        alpha2, betta2 = my.find_sigm_weights(test_model.conv2.weight, False)
+
+        model.conv1.initialize_weights(alpha1, betta1)
+        model.conv2.initialize_weights(alpha2, betta2)
 
         # model.conv1.bias.copy_(state_dict['conv1.bias'])
         # model.conv2.bias.copy_(state_dict['conv2.bias'])

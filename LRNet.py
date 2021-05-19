@@ -48,8 +48,10 @@ class LRNet(nn.Module):
 
     def __init__(self):
         super(LRNet, self).__init__()
-        self.conv1 = myConv2d(1, 32, 5, 1)
-        self.conv2 = myConv2d(32, 64, 5, 1)
+        # self.conv1 = myConv2d(1, 32, 5, 1)
+        # self.conv2 = myConv2d(32, 64, 5, 1)
+        self.conv1 = mySigmConv2d(1, 32, 5, 1)
+        self.conv2 = mySigmConv2d(32, 64, 5, 1)
         self.dropout1 = nn.Dropout(0.5)
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(1024, 512)
@@ -58,7 +60,9 @@ class LRNet(nn.Module):
         self.bn2 = nn.BatchNorm2d(64)
 
     def forward(self, x):
+        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         x = self.conv1(x)  # 32 x 24 x 24
+        # print("x1: " + str(x))
         x = self.bn1(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
@@ -231,6 +235,165 @@ class myConv2d(nn.Module):
             v = torch.sqrt(z1)
             return m + epsilon * v
 
+class mySigmConv2d(nn.Module):
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: _size_2_t,
+        stride: _size_2_t = 1,
+        padding: _size_2_t = 0,
+        dilation: _size_2_t = 1,
+        groups: int = 1,
+        clusters: int = 3,
+        test_forward: bool = False,
+    ):
+        super().__init__()
+        self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
+        self.test_forward = test_forward
+
+        transposed = True
+        if transposed:
+            D_0, D_1, D_2, D_3 = out_channels, in_channels, kernel_size, kernel_size
+            alpha = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
+            betta = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
+        else:
+            D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
+            alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
+            betta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
+
+        test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
+        self.test_weight = nn.Parameter(test_weight)
+
+        self.alpha = nn.Parameter(alpha)  # nn.Parameter is a Tensor that's a module parameter.
+        self.betta = nn.Parameter(betta)  # nn.Parameter is a Tensor that's a module parameter.
+
+        bias = torch.Tensor(out_channels)
+        self.bias = Parameter(bias)
+
+        self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]])
+        self.discrete_val.requires_grad = False
+        self.discrete_square_val = self.discrete_val * self.discrete_val
+        self.discrete_square_val.requires_grad = False
+
+        if transposed:
+            discrete_mat = self.discrete_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size, kernel_size, 1)
+            discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size,
+                                                                               kernel_size, 1)
+        else:
+            discrete_mat = self.discrete_val.unsqueeze(1).repeat(in_channels, out_channels, kernel_size, kernel_size, 1)
+            discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size,
+                                                                               kernel_size, 1)
+        self.discrete_mat = nn.Parameter(discrete_mat)
+        self.discrete_square_mat = nn.Parameter(discrete_square_mat)
+
+        self.discrete_mat.requires_grad = False
+        self.discrete_square_mat.requires_grad = False
+
+        self.softmax = torch.nn.Softmax(dim=4)
+        self.sigmoid = torch.nn.Sigmoid()
+
+        self.reset_parameters()
+
+    def reset_parameters(self) -> None:
+        # self.reset_train_parameters()
+        init.constant_(self.alpha, -0.69314)
+        init.constant_(self.betta, 0.0)
+        # init.kaiming_uniform_(self.alpha, a=math.sqrt(5))
+        # init.kaiming_uniform_(self.betta, a=math.sqrt(5))
+        # init.uniform_(self.weight_theta, -1, 1)
+        # init.constant_(self.weight_theta, 1)
+        if self.bias is not None:
+            fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.discrete_mat)
+            bound = 1 / math.sqrt(fan_in)
+            init.uniform_(self.bias, -bound, bound)
+
+    def test_mode_switch(self) -> None:
+        print ("test_mode_switch")
+        self.test_forward = True;
+        print("Initializing Test Weights: \n")
+        sigmoid_func = torch.nn.Sigmoid()
+        alpha_prob = sigmoid_func(self.alpha)
+        betta_prob = sigmoid_func(self.betta)  * (1 - alpha_prob)
+        prob_mat = torch.cat(((1 - alpha_prob - betta_prob), alpha_prob, betta_prob), 4)
+        my_array = []
+        for i, val_0 in enumerate(prob_mat):
+            my_array_0 = []
+            for j, val_1 in enumerate(val_0):
+                my_array_1 = []
+                for m, val_2 in enumerate(val_1):
+                    my_array_2 = []
+                    for n, val_3 in enumerate(val_2):
+                        theta = val_3
+                        values = torch.multinomial(theta, 1) - 1
+                        my_array_2.append(values)
+                    my_array_1.append(my_array_2)
+                my_array_0.append(my_array_1)
+            my_array.append(my_array_0)
+        test_weight = torch.tensor(my_array, dtype=torch.float32)
+        self.test_weight = nn.Parameter(test_weight)
+
+    def initialize_weights(self, alpha, betta) -> None:
+        print ("Initialize Weights")
+        self.alpha = nn.Parameter(torch.tensor(alpha, dtype=torch.float32))
+        self.betta = nn.Parameter(torch.tensor(betta, dtype=torch.float32))
+
+    def forward(self, input: Tensor) -> Tensor:
+        if self.test_forward:
+            print("test_forward")
+            return F.conv2d(input, self.test_weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
+        else:
+            prob_alpha = self.sigmoid(self.alpha)
+            prob_betta = self.sigmoid(self.betta) * (1 - prob_alpha)
+
+            # print("################################################################")
+            # print("################################################################")
+            # print("################################################################")
+            # print(self.out_channels)
+            # print (prob_alpha)
+            # print (prob_betta)
+
+            prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
+
+            # print("prob_mat: " + str(prob_mat))
+
+            # E[X] calc
+            mean_tmp = prob_mat * self.discrete_mat
+            mean = torch.sum(mean_tmp, dim=4)
+
+            # print("mean: " + str(mean))
+
+            # E[x^2]
+            mean_square_tmp = prob_mat * self.discrete_square_mat
+            mean_square = torch.sum(mean_square_tmp, dim=4)
+
+            # E[x] ^ 2
+            mean_pow2 = mean * mean
+
+            # Var (E[x^2] - E[x]^2)
+            # print("mean_tmp: " + str(mean_tmp))
+            # print("mean_square_tmp: " + str(mean_square_tmp))
+            # print("mean_pow2: " + str(mean_pow2))
+
+            0.0975 - 2.9156e+00
+
+            sigma_square = mean_square - mean_pow2
+
+            # print("sigma_square: " + str(sigma_square))
+
+            z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
+            z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
+            epsilon = torch.rand(z1.size())
+            if torch.cuda.is_available():
+                epsilon = epsilon.to(device='cuda')
+            m = z0
+            v = torch.sqrt(z1)
+            # print("z1: " + str(z1))
+            # print("m: " + str(m))
+            # print("v: " + str(v))
+            return m + epsilon * v
+
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
     weight_decay = 1e-4
@@ -241,8 +404,14 @@ def train(args, model, device, train_loader, optimizer, epoch):
         output = model(data)
         # loss = F.nll_loss(output, target) 
         # loss = F.cross_entropy(output, target)
-        loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
-              + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
+        # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
+        #       + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
+
+        loss = F.cross_entropy(output, target) + probability_decay * (torch.norm(model.conv1.alpha, 2)
+                                                           + torch.norm(model.conv1.betta, 2)
+                                                           + torch.norm(model.conv2.alpha, 2)
+                                                           + torch.norm(model.conv2.betta, 2)) + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
+
         if args.debug_mode:
             torch.autograd.set_detect_anomaly(True)
             loss.backward(retain_graph=True)
@@ -329,3 +498,40 @@ def find_weights(w, my_prints=False):
         print("theta.shape: " + str(np.shape(theta)))
     # exit(1)
     return theta
+
+
+def find_sigm_weights(w, my_prints=False):
+    if my_prints:
+        print("w: " + str(w))
+        print(w.size())
+        print(type(w))
+
+    p_max = 0.95
+    p_min = 0.05
+    w_norm = w / torch.std(w)
+    e_alpha = p_max - ((p_max - p_min) * torch.abs(w_norm))
+    if my_prints:
+        print("alpha: " + str(alpha))
+    e_betta = 0.5 * (1 + (w_norm / (1 - e_alpha)))
+    e_alpha = torch.clamp(e_alpha, p_min, p_max)
+    if my_prints:
+        print("alpha.clip: " + str(e_alpha))
+        print("alpha.size: " + str(e_alpha.size()))
+
+    # e_betta = 0.5 * (1 + (w_norm / (1 - e_alpha)))
+    if my_prints:
+        print("e_betta: " + str(e_betta))
+    e_betta = torch.clamp(e_betta, p_min, p_max)
+    if my_prints:
+        print("e_betta.clip: " + str(e_betta))
+
+    alpha_prob = torch.log(e_alpha / (1 - e_alpha))
+    betta_prob = torch.log(e_betta / (1 - e_betta))
+    if my_prints:
+        print("alpha_prob: " + str(alpha_prob))
+        print("betta_prob: " + str(betta_prob))
+    alpha_prob = alpha_prob.detach().cpu().clone().numpy()
+    betta_prob = betta_prob.detach().cpu().clone().numpy()
+    alpha_prob = np.expand_dims(alpha_prob, axis=-1)
+    betta_prob = np.expand_dims(betta_prob, axis=-1)
+    return alpha_prob, betta_prob
