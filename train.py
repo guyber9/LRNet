@@ -126,6 +126,7 @@ def main():
         my.test(model, device, test_loader, False)
         if ((epoch % 20) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
+            torch.save(model.state_dict(), "mnist_interim_model.pt")
             my.test(model, device, train_loader, False)
         scheduler.step()
 
