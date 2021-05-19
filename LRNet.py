@@ -17,7 +17,7 @@ class FPNet(nn.Module):
         self.conv1 = nn.Conv2d(1, 32, 5, 1)
         self.conv2 = nn.Conv2d(32, 64, 5, 1)
         self.dropout1 = nn.Dropout(0.5)
-        self.dropout2 = nn.Dropout(0.1)
+        self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(1024, 512)
         self.fc2 = nn.Linear(512, 10)
         self.bn1 = nn.BatchNorm2d(32)
@@ -50,8 +50,8 @@ class LRNet(nn.Module):
         super(LRNet, self).__init__()
         self.conv1 = myConv2d(1, 32, 5, 1)
         self.conv2 = myConv2d(32, 64, 5, 1)
-        self.dropout1 = nn.Dropout(0.25)
-        self.dropout2 = nn.Dropout(0.25)
+        self.dropout1 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(1024, 512)
         self.fc2 = nn.Linear(512, 10)
         self.bn1 = nn.BatchNorm2d(32)
@@ -165,9 +165,8 @@ class myConv2d(nn.Module):
                             np_theta = theta.detach().cpu().clone().numpy().tolist()
                         else:
                             np_theta = theta.detach().numpy().tolist()
-                        values_arr = np.random.default_rng().multinomial(10000, np_theta)
+                        values_arr = np.random.default_rng().multinomial(1000, np_theta)
                         values = np.nanargmax(values_arr) - 1
-
                         my_array_2.append(values)
                     my_array_1.append(my_array_2)
                 my_array_0.append(my_array_1)
@@ -234,7 +233,7 @@ class myConv2d(nn.Module):
 
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
-    weight_decay = 1e-5
+    weight_decay = 1e-4
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
