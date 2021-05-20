@@ -332,6 +332,8 @@ class mySigmConv2d(nn.Module):
                 my_array_0.append(my_array_1)
             my_array.append(my_array_0)
         test_weight = torch.tensor(my_array, dtype=torch.float32)
+        if torch.cuda.is_available():
+            test_weight = test_weight.to(device='cuda')       
         self.test_weight = nn.Parameter(test_weight)
 
     def initialize_weights(self, alpha, betta) -> None:
