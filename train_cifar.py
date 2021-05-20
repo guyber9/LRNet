@@ -94,7 +94,7 @@ class LRNet_CIFAR10(nn.Module):
         print ("#######################################################")
         print ("#######################################################")
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
-        print ("x: " + str(x))
+        #print ("x: " + str(x))
         for i,val1 in enumerate(x):
             for j,val2 in enumerate(val1):
                 for m,val3 in enumerate(val2):
