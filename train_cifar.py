@@ -40,7 +40,6 @@ class FPNet_CIFAR10(nn.Module):
         x = F.relu(x)
         x = self.dropout1(x)
 
-
         x = self.conv3(x)  # 256 x 16 x 16
         x = self.bn3(x)
         x = F.relu(x)
@@ -92,20 +91,28 @@ class LRNet_CIFAR10(nn.Module):
 
     def forward(self, x):
         print ("#######################################################")
+        print ("#######################################################")
+        print ("#######################################################")
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
-        print ("x: " + str(x))       
-        x = self.bn1(x)
-        #print ("x_bn1: " + str(x))
-        x = F.relu(x)
-        x = self.conv2(x)  # 128 x 32 x 32
-        torch.set_printoptions(threshold=100000)
-        print ("x2: " + str(x))
+        print ("x: " + str(x))
         for i,val1 in enumerate(x):
             for j,val2 in enumerate(val1):
                 for m,val3 in enumerate(val2):
-                    print ("val3(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+                    print ("x(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+        # print ("x: " + str(x))
+        x = self.bn1(x)
+        #print ("x_bn1: " + str(x))
+
+        x = F.relu(x)
+        x = self.conv2(x)  # 128 x 32 x 32
+        # torch.set_printoptions(threshold=100000)
+        # print ("x2: " + str(x))
+        # for i,val1 in enumerate(x):
+        #     for j,val2 in enumerate(val1):
+        #         for m,val3 in enumerate(val2):
+        #             print ("val3(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
         x = self.bn2(x)
-        print ("x_bn2: " + str(x))
+        # print ("x_bn2: " + str(x))
         x = F.max_pool2d(x, 2)  # 128 x 16 x 16
         x = F.relu(x)
         x = self.dropout1(x)
@@ -140,7 +147,7 @@ class LRNet_CIFAR10(nn.Module):
         x = F.relu(x)
         x = self.fc2(x)  # 1024 -> 10
         output = x
-        print ("output: " + str(output))
+        # print ("output: " + str(output))
         return output
 
 def main():
@@ -231,20 +238,19 @@ def main():
         test_model.eval()
         # state_dict = torch.load('./cifar10_full_prec.pt')
 
+        alpha1, betta1 = my.find_sigm_weights(test_model.conv1.weight, False)
+        alpha2, betta2 = my.find_sigm_weights(test_model.conv2.weight, False)
+        alpha3, betta3 = my.find_sigm_weights(test_model.conv3.weight, False)
+        alpha4, betta4 = my.find_sigm_weights(test_model.conv4.weight, False)
+        alpha5, betta5 = my.find_sigm_weights(test_model.conv5.weight, False)
+        alpha6, betta6 = my.find_sigm_weights(test_model.conv6.weight, False)
 
-        theta1, betta1 = my.find_sigm_weights(test_model.conv1.weight, False)
-        theta2, betta2 = my.find_sigm_weights(test_model.conv2.weight, False)
-        theta3, betta3 = my.find_sigm_weights(test_model.conv3.weight, False)
-        theta4, betta4 = my.find_sigm_weights(test_model.conv4.weight, False)
-        theta5, betta5 = my.find_sigm_weights(test_model.conv5.weight, False)
-        theta6, betta6 = my.find_sigm_weights(test_model.conv6.weight, False)
-
-        #model.conv1.initialize_weights(theta1, betta1)
-        #model.conv2.initialize_weights(theta2, betta2)
-        #model.conv3.initialize_weights(theta3, betta3)
-        #model.conv4.initialize_weights(theta4, betta4)
-        #model.conv5.initialize_weights(theta5, betta5)
-        #model.conv6.initialize_weights(theta6, betta6)
+        model.conv1.initialize_weights(alpha1, betta1)
+        model.conv2.initialize_weights(alpha2, betta2)
+        model.conv3.initialize_weights(alpha3, betta3)
+        model.conv4.initialize_weights(alpha4, betta4)
+        model.conv5.initialize_weights(alpha5, betta5)
+        model.conv6.initialize_weights(alpha6, betta6)
 
         # model.conv1.bias.copy_(state_dict['conv1.bias'])
         # model.conv2.bias.copy_(state_dict['conv2.bias'])
