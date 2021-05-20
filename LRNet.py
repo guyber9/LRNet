@@ -52,7 +52,7 @@ class LRNet(nn.Module):
         # self.conv2 = myConv2d(32, 64, 5, 1)
         self.conv1 = mySigmConv2d(1, 32, 5, 1)
         self.conv2 = mySigmConv2d(32, 64, 5, 1)
-        self.dropout1 = nn.Dropout(0.5)
+        self.dropout1 = nn.Dropout(0.2)
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(1024, 512)
         self.fc2 = nn.Linear(512, 10)
@@ -66,7 +66,7 @@ class LRNet(nn.Module):
         x = self.bn1(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
-        # x = self.dropout1(x)
+        x = self.dropout1(x)
         x = self.conv2(x) # 64 x 8 x 8
         x = self.bn2(x)
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
@@ -326,14 +326,14 @@ class mySigmConv2d(nn.Module):
                     my_array_2 = []
                     for n, val_3 in enumerate(val_2):
                         theta = val_3
-                        print ("theta: " + str(theta))
+                        # print ("theta: " + str(theta))
                         # values = torch.multinomial(theta, 1) - 1
                         # my_array_2.append(values)
                         if torch.cuda.is_available():
                             np_theta = theta.detach().cpu().clone().numpy().tolist()
                         else:
                             np_theta = theta.detach().numpy().tolist()
-                        values_arr = np.random.default_rng().multinomial(100, np_theta)
+                        values_arr = np.random.default_rng().multinomial(1, np_theta)
                         values = np.nanargmax(values_arr) - 1
                         my_array_2.append(values)
 
@@ -353,7 +353,7 @@ class mySigmConv2d(nn.Module):
 
     def forward(self, input: Tensor) -> Tensor:
         if self.test_forward:
-            print("test_forward")
+            #print("test_forward")
             return F.conv2d(input, self.test_weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
         else:
             prob_alpha = self.sigmoid(self.alpha)

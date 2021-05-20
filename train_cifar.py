@@ -31,7 +31,7 @@ class FPNet_CIFAR10(nn.Module):
         self.fc2 = nn.Linear(1024, 10)
 
     def forward(self, x):
-        x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
+        x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 3 
         x = self.bn1(x)
         x = F.relu(x)
         x = self.conv2(x) # 128 x 32 x 32
@@ -72,12 +72,12 @@ class LRNet_CIFAR10(nn.Module):
 
     def __init__(self):
         super(LRNet_CIFAR10, self).__init__()
-        self.conv1 = my.myConv2d(3, 128, 3, 1, padding=1)
-        self.conv2 = my.myConv2d(128, 128, 3, 1, padding=1)
-        self.conv3 = my.myConv2d(128, 256, 3, 1, padding=1)
-        self.conv4 = my.myConv2d(256, 256, 3, 1, padding=1)
-        self.conv5 = my.myConv2d(256, 512, 3, 1, padding=1)
-        self.conv6 = my.myConv2d(512, 512, 3, 1, padding=1)
+        self.conv1 = my.mySigmConv2d(3, 128, 3, 1, padding=1)
+        self.conv2 = my.mySigmConv2d(128, 128, 3, 1, padding=1)
+        self.conv3 = my.mySigmConv2d(128, 256, 3, 1, padding=1)
+        self.conv4 = my.mySigmConv2d(256, 256, 3, 1, padding=1)
+        self.conv5 = my.mySigmConv2d(256, 512, 3, 1, padding=1)
+        self.conv6 = my.mySigmConv2d(512, 512, 3, 1, padding=1)
         self.bn1 = nn.BatchNorm2d(128)
         self.bn2 = nn.BatchNorm2d(128)
         self.bn3 = nn.BatchNorm2d(256)
@@ -91,14 +91,26 @@ class LRNet_CIFAR10(nn.Module):
         self.fc2 = nn.Linear(1024, 10)
 
     def forward(self, x):
+        print ("#######################################################")
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
+        print ("x: " + str(x))       
         x = self.bn1(x)
+        #print ("x_bn1: " + str(x))
         x = F.relu(x)
         x = self.conv2(x)  # 128 x 32 x 32
+        torch.set_printoptions(threshold=100000)
+        print ("x2: " + str(x))
+        for i,val1 in enumerate(x):
+            for j,val2 in enumerate(val1):
+                for m,val3 in enumerate(val2):
+                    print ("val3(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
         x = self.bn2(x)
+        print ("x_bn2: " + str(x))
         x = F.max_pool2d(x, 2)  # 128 x 16 x 16
         x = F.relu(x)
         x = self.dropout1(x)
+
+        #print ("x3: " + str(x))
 
         x = self.conv3(x)  # 256 x 16 x 16
         x = self.bn3(x)
@@ -109,6 +121,8 @@ class LRNet_CIFAR10(nn.Module):
         x = F.relu(x)
         x = self.dropout2(x)
 
+        #print ("x5: " + str(x))
+
         x = self.conv5(x)  # 512 x 8 x 8
         x = self.bn5(x)
         x = F.relu(x)
@@ -117,6 +131,8 @@ class LRNet_CIFAR10(nn.Module):
         x = F.max_pool2d(x, 2)  # 512 x 4 x 4 (= 8192)
         x = F.relu(x)
         x = self.dropout3(x)
+        
+        #print ("x7: " + str(x))
 
         x = torch.flatten(x, 1)  # 8192
         # x = self.dropout2(x)
@@ -124,6 +140,7 @@ class LRNet_CIFAR10(nn.Module):
         x = F.relu(x)
         x = self.fc2(x)  # 1024 -> 10
         output = x
+        print ("output: " + str(output))
         return output
 
 def main():
@@ -214,19 +231,20 @@ def main():
         test_model.eval()
         # state_dict = torch.load('./cifar10_full_prec.pt')
 
-        theta1 = my.find_weights(test_model.conv1.weight, False)
-        theta2 = my.find_weights(test_model.conv2.weight, False)
-        theta3 = my.find_weights(test_model.conv3.weight, False)
-        theta4 = my.find_weights(test_model.conv4.weight, False)
-        theta5 = my.find_weights(test_model.conv5.weight, False)
-        theta6 = my.find_weights(test_model.conv6.weight, False)
 
-        model.conv1.initialize_weights(theta1)
-        model.conv2.initialize_weights(theta2)
-        model.conv3.initialize_weights(theta3)
-        model.conv4.initialize_weights(theta4)
-        model.conv5.initialize_weights(theta5)
-        model.conv6.initialize_weights(theta6)
+        theta1, betta1 = my.find_sigm_weights(test_model.conv1.weight, False)
+        theta2, betta2 = my.find_sigm_weights(test_model.conv2.weight, False)
+        theta3, betta3 = my.find_sigm_weights(test_model.conv3.weight, False)
+        theta4, betta4 = my.find_sigm_weights(test_model.conv4.weight, False)
+        theta5, betta5 = my.find_sigm_weights(test_model.conv5.weight, False)
+        theta6, betta6 = my.find_sigm_weights(test_model.conv6.weight, False)
+
+        #model.conv1.initialize_weights(theta1, betta1)
+        #model.conv2.initialize_weights(theta2, betta2)
+        #model.conv3.initialize_weights(theta3, betta3)
+        #model.conv4.initialize_weights(theta4, betta4)
+        #model.conv5.initialize_weights(theta5, betta5)
+        #model.conv6.initialize_weights(theta6, betta6)
 
         # model.conv1.bias.copy_(state_dict['conv1.bias'])
         # model.conv2.bias.copy_(state_dict['conv2.bias'])
