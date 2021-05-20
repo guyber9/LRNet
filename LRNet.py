@@ -326,8 +326,18 @@ class mySigmConv2d(nn.Module):
                     my_array_2 = []
                     for n, val_3 in enumerate(val_2):
                         theta = val_3
-                        values = torch.multinomial(theta, 1) - 1
+                        print ("theta: " + str(theta))
+                        # values = torch.multinomial(theta, 1) - 1
+                        # my_array_2.append(values)
+                        if torch.cuda.is_available():
+                            np_theta = theta.detach().cpu().clone().numpy().tolist()
+                        else:
+                            np_theta = theta.detach().numpy().tolist()
+                        values_arr = np.random.default_rng().multinomial(100, np_theta)
+                        values = np.nanargmax(values_arr) - 1
                         my_array_2.append(values)
+
+
                     my_array_1.append(my_array_2)
                 my_array_0.append(my_array_1)
             my_array.append(my_array_0)
