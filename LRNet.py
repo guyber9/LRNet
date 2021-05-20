@@ -362,9 +362,9 @@ class mySigmConv2d(nn.Module):
             # print("################################################################")
             # print("################################################################")
             # print("################################################################")
-            # print(self.out_channels)
-            # print (prob_alpha)
-            # print (prob_betta)
+            print(self.out_channels)
+            print (prob_alpha)
+            print (prob_betta)
 
             prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
             if torch.cuda.is_available():
@@ -401,9 +401,9 @@ class mySigmConv2d(nn.Module):
                 epsilon = epsilon.to(device='cuda')
             m = z0
             v = torch.sqrt(z1)
-            # print("z1: " + str(z1))
-            # print("m: " + str(m))
-            # print("v: " + str(v))
+            print("z1: " + str(z1))
+            print("m: " + str(m))
+            print("v: " + str(v))
             return m + epsilon * v
 
 def train(args, model, device, train_loader, optimizer, epoch):
