@@ -336,8 +336,6 @@ class mySigmConv2d(nn.Module):
                         values_arr = np.random.default_rng().multinomial(1, np_theta)
                         values = np.nanargmax(values_arr) - 1
                         my_array_2.append(values)
-
-
                     my_array_1.append(my_array_2)
                 my_array_0.append(my_array_1)
             my_array.append(my_array_0)

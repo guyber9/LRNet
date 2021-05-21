@@ -55,12 +55,12 @@ def test():
     print ("train Data Set")
     my.test(model, device, train_loader, True)
 
-    for idx in range(1,10+1):
-        model.conv1.test_mode_switch()
-        model.conv2.test_mode_switch()
-        my.test(model, device, test_loader, True)
+    # for idx in range(1,10+1):
+    #     model.conv1.test_mode_switch()
+    #     model.conv2.test_mode_switch()
+    #     my.test(model, device, test_loader, True)
 
-    exit(1)
+    # exit(1)
 
     print ("###################################")
     print ("Ternary Model")

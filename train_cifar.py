@@ -83,9 +83,9 @@ class LRNet_CIFAR10(nn.Module):
         self.bn4 = nn.BatchNorm2d(256)
         self.bn5 = nn.BatchNorm2d(512)
         self.bn6 = nn.BatchNorm2d(512)
-        self.dropout1 = nn.Dropout(0.2)
-        self.dropout2 = nn.Dropout(0.2)
-        self.dropout3 = nn.Dropout(0.4)
+        self.dropout1 = nn.Dropout(0.4)
+        self.dropout2 = nn.Dropout(0.4)
+        self.dropout3 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(8192, 1024)
         self.fc2 = nn.Linear(1024, 10)
 
