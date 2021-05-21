@@ -412,12 +412,16 @@ class mySigmConv2d(nn.Module):
             m = z0
             v = torch.sqrt(z1)
             # print("z1: " + str(z1))
-            print("m: " + str(m))
-            print("v: " + str(v))
+            # print("m: " + str(m))
+            # print("v: " + str(v))
             for i, val1 in enumerate(m):
                 for j, val2 in enumerate(val1):
                     for m, val3 in enumerate(val2):
                         print("m(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            for i, val1 in enumerate(z1):
+                for j, val2 in enumerate(val1):
+                    for m, val3 in enumerate(val2):
+                        print("z1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
             for i, val1 in enumerate(v):
                 for j, val2 in enumerate(val1):
                     for m, val3 in enumerate(val2):
