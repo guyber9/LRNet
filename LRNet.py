@@ -431,7 +431,13 @@ class mySigmConv2d(nn.Module):
             # print("sigma_square: " + str(sigma_square))
 
             z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
-            z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
+
+            torch.backends.cudnn.deterministic = True
+            devtype = dict(device=torch.device("cuda:0"), dtype=torch.float32)
+            input_pow2 = (input * input)
+            input_pow2 = input_pow2.to(**devtype)
+            sigma_square = sigma_square.to(**devtype)
+            z1 = F.conv2d(input_pow2, sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
             epsilon = torch.rand(z1.size())
             if torch.cuda.is_available():
                 epsilon = epsilon.to(device='cuda')
