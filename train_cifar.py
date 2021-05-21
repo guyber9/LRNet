@@ -175,8 +175,10 @@ def main():
     # conv1d/2d
     result = F.conv2d(x, w, None)
 
-    print(result)
-
+    for i,val1 in enumerate(result):
+        for j,val2 in enumerate(val1):
+            for m,val3 in enumerate(val2):
+                print ("result(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
     exit(1)
 
     # Training settings
