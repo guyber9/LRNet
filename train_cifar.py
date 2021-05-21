@@ -192,7 +192,9 @@ def main():
     parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
                         help='learning rate (default: 0.01)')
     parser.add_argument('--gamma', type=float, default=0.1, metavar='M',
-                        help='Learning rate step gamma (default: 0.7)')
+                        help='Learning rate step gamma (default: 0.1)')
+    parser.add_argument('--step-size', type=int, default=100, metavar='M',
+                        help='Step size for scheduler (default: 100)')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
     parser.add_argument('--dry-run', action='store_true', default=False,
@@ -312,13 +314,13 @@ def main():
     print ("training..")
     print ("num of epochs: " + str(args.epochs))
     print ("###################################")
-    my_step_size = 50 
-    scheduler = StepLR(optimizer, step_size=my_step_size, gamma=args.gamma)
+    scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         my.train(args, model, device, train_loader, optimizer, epoch)
         my.test(model, device, test_loader, False)
-        if ((epoch % 20) == 0) or (epoch == args.epochs):
+        if ((epoch % 30) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
+            torch.save(model.state_dict(), "cifar10_interim_model.pt")
             my.test(model, device, train_loader, False)
         # my.test(model, device, test_loader, True)
         scheduler.step()
