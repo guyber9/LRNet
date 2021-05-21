@@ -361,10 +361,10 @@ class mySigmConv2d(nn.Module):
 
             # print("################################################################")
             # print("################################################################")
-            print("################################################################")
-            print("START")
-            print("################################################################")
-            print(self.out_channels)
+            # print("################################################################")
+            # print("START")
+            # print("################################################################")
+            # print(self.out_channels)
             # print (prob_alpha)
             # print (prob_betta)
 
@@ -380,10 +380,10 @@ class mySigmConv2d(nn.Module):
 
             prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
 
-            for i, val1 in enumerate(prob_mat):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("prob_mat(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(prob_mat):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("prob_mat(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
             if torch.cuda.is_available():
                 prob_mat = prob_mat.to(device='cuda')
@@ -419,14 +419,14 @@ class mySigmConv2d(nn.Module):
             #         for m, val3 in enumerate(val2):
             #             print("mean_pow2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
-            for i, val1 in enumerate(sigma_square):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("sigma_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            for i, val1 in enumerate((input * input)):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("input^2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(sigma_square):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("sigma_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate((input * input)):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("input^2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
             # print("sigma_square: " + str(sigma_square))
 
@@ -450,14 +450,14 @@ class mySigmConv2d(nn.Module):
             #     for j, val2 in enumerate(val1):
             #         for m, val3 in enumerate(val2):
             #             print("m(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            for i, val1 in enumerate(z1):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("z1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            for i, val1 in enumerate(v):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("v(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(z1):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("z1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(v):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("v(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
             return m + epsilon * v
 
