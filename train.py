@@ -37,6 +37,8 @@ def main():
                         help='For Loading Params from Trained Full Precision Model')
     parser.add_argument('--debug-mode', action='store_true', default=False,
                         help='For Debug Mode')
+    parser.add_argument('--cifar10', action='store_true', default=False,
+                        help='cifar10 flag')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
