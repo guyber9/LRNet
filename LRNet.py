@@ -361,7 +361,9 @@ class mySigmConv2d(nn.Module):
 
             # print("################################################################")
             # print("################################################################")
-            # print("################################################################")
+            print("################################################################")
+            print("START")
+            print("################################################################")
             print(self.out_channels)
             # print (prob_alpha)
             # print (prob_betta)
@@ -408,18 +410,23 @@ class mySigmConv2d(nn.Module):
 
             sigma_square = mean_square - mean_pow2
 
-            for i, val1 in enumerate(mean_square):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("mean_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            for i, val1 in enumerate(mean_pow2):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("mean_pow2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(mean_square):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("mean_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(mean_pow2):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("mean_pow2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+
             for i, val1 in enumerate(sigma_square):
                 for j, val2 in enumerate(val1):
                     for m, val3 in enumerate(val2):
                         print("sigma_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            for i, val1 in enumerate((input * input)):
+                for j, val2 in enumerate(val1):
+                    for m, val3 in enumerate(val2):
+                        print("input^2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
             # print("sigma_square: " + str(sigma_square))
 
@@ -433,10 +440,10 @@ class mySigmConv2d(nn.Module):
             # print("z1: " + str(z1))
             # print("m: " + str(m))
             # print("v: " + str(v))
-            for i, val1 in enumerate(m):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("m(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(m):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("m(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
             for i, val1 in enumerate(z1):
                 for j, val2 in enumerate(val1):
                     for m, val3 in enumerate(val2):
