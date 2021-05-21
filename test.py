@@ -51,9 +51,9 @@ def test():
     print ("Original Trained Model (no ternary)")
     print ("###################################")
     print ("test Data Set")
-    #my.test(model, device, test_loader, True)
+    my.test(model, device, test_loader, True)
     print ("train Data Set")
-    #my.test(model, device, train_loader, True)
+    my.test(model, device, train_loader, True)
 
     for idx in range(1,10+1):
         model.conv1.test_mode_switch()

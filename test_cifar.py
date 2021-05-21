@@ -31,8 +31,8 @@ def test():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    model = my_cifar.FPNet_CIFAR10().to(device)
-    model.load_state_dict(torch.load('./cifar10_full_prec.pt'))
+    model = my_cifar.LRNet_CIFAR10().to(device)
+    model.load_state_dict(torch.load('./cifar10_cnn.pt'))
     model.eval()
 
     transform = transforms.Compose([
@@ -56,17 +56,20 @@ def test():
     print ("train Data Set")
     my.test(model, device, train_loader, True)
 
-    # model.conv1.test_mode_switch()
-    # model.conv2.test_mode_switch()
+    model.conv1.test_mode_switch()
+    model.conv2.test_mode_switch()
+    model.conv3.test_mode_switch()
+    model.conv4.test_mode_switch()
+    model.conv5.test_mode_switch()
+    model.conv6.test_mode_switch()
 
-    # print ("###################################")
-    # print ("Ternary Model")
-    # print ("###################################")
-    # print ("test Data Set")
-    # my.test(model, device, test_loader, True)
-    # print ("train Data Set")
-    # my.test(model, device, train_loader, True)
-
+    print ("###################################")
+    print ("Ternary Model")
+    print ("###################################")
+    print ("test Data Set")
+    my.test(model, device, test_loader, True)
+    print ("train Data Set")
+    my.test(model, device, train_loader, True)
 
 if __name__ == '__main__':
     test()
