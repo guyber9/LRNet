@@ -366,17 +366,23 @@ class mySigmConv2d(nn.Module):
             # print (prob_alpha)
             # print (prob_betta)
 
-            for i, val1 in enumerate(prob_alpha):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("prob_alpha(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-
-            for i, val1 in enumerate(prob_betta):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("prob_betta(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(prob_alpha):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("prob_alpha(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            #
+            # for i, val1 in enumerate(prob_betta):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("prob_betta(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
             prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
+
+            for i, val1 in enumerate(prob_mat):
+                for j, val2 in enumerate(val1):
+                    for m, val3 in enumerate(val2):
+                        print("prob_mat(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+
             if torch.cuda.is_available():
                 prob_mat = prob_mat.to(device='cuda')
 
@@ -401,6 +407,15 @@ class mySigmConv2d(nn.Module):
             # print("mean_pow2: " + str(mean_pow2))
 
             sigma_square = mean_square - mean_pow2
+
+            for i, val1 in enumerate(mean_square):
+                for j, val2 in enumerate(val1):
+                    for m, val3 in enumerate(val2):
+                        print("mean_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            for i, val1 in enumerate(mean_pow2):
+                for j, val2 in enumerate(val1):
+                    for m, val3 in enumerate(val2):
+                        print("mean_pow2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
             # print("sigma_square: " + str(sigma_square))
 

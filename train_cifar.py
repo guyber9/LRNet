@@ -95,26 +95,26 @@ class LRNet_CIFAR10(nn.Module):
         print ("#######################################################")
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
         #print ("x: " + str(x))
-        for i,val1 in enumerate(x):
-            for j,val2 in enumerate(val1):
-                for m,val3 in enumerate(val2):
-                    print ("x(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+        # for i,val1 in enumerate(x):
+        #     for j,val2 in enumerate(val1):
+        #         for m,val3 in enumerate(val2):
+        #             print ("x(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
         # print ("x: " + str(x))
         x = self.bn1(x)
-        for i, val1 in enumerate(x):
-            for j, val2 in enumerate(val1):
-                for m, val3 in enumerate(val2):
-                    print("x_bn1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+        # for i, val1 in enumerate(x):
+        #     for j, val2 in enumerate(val1):
+        #         for m, val3 in enumerate(val2):
+        #             print("x_bn1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
         #print ("x_bn1: " + str(x))
 
         x = F.relu(x)
         x = self.conv2(x)  # 128 x 32 x 32
         # torch.set_printoptions(threshold=100000)
         # print ("x2: " + str(x))
-        for i,val1 in enumerate(x):
-            for j,val2 in enumerate(val1):
-                for m,val3 in enumerate(val2):
-                    print ("x2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+        # for i,val1 in enumerate(x):
+        #     for j,val2 in enumerate(val1):
+        #         for m,val3 in enumerate(val2):
+        #             print ("x2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
         x = self.bn2(x)
         # print ("x_bn2: " + str(x))
         x = F.max_pool2d(x, 2)  # 128 x 16 x 16
