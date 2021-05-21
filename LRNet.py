@@ -416,6 +416,10 @@ class mySigmConv2d(nn.Module):
                 for j, val2 in enumerate(val1):
                     for m, val3 in enumerate(val2):
                         print("mean_pow2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            for i, val1 in enumerate(sigma_square):
+                for j, val2 in enumerate(val1):
+                    for m, val3 in enumerate(val2):
+                        print("sigma_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
             # print("sigma_square: " + str(sigma_square))
 
