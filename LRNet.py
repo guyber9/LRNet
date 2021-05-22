@@ -52,7 +52,7 @@ class LRNet(nn.Module):
         # self.conv2 = myConv2d(32, 64, 5, 1)
         self.conv1 = mySigmConv2d(1, 32, 5, 1)
         self.conv2 = mySigmConv2d(32, 64, 5, 1)
-        self.dropout1 = nn.Dropout(0.2)
+        self.dropout1 = nn.Dropout(0.5)
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(1024, 512)
         self.fc2 = nn.Linear(512, 10)
@@ -60,13 +60,11 @@ class LRNet(nn.Module):
         self.bn2 = nn.BatchNorm2d(64)
 
     def forward(self, x):
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         x = self.conv1(x)  # 32 x 24 x 24
-        # print("x1: " + str(x))
         x = self.bn1(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
-        x = self.dropout1(x)
+        # x = self.dropout1(x) <= was here
         x = self.conv2(x) # 64 x 8 x 8
         x = self.bn2(x)
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
@@ -75,9 +73,8 @@ class LRNet(nn.Module):
         x = self.dropout2(x)
         x = self.fc1(x)
         x = F.relu(x)
+        x = self.dropout1(x) # move to here tmp
         x = self.fc2(x)
-        # output = F.log_softmax(x, dim=1)
-        # output = F.softmax(x)
         output = x
         return output
 
@@ -210,7 +207,6 @@ class myConv2d(nn.Module):
         else:
             # E[X] calc
             prob_mat = self.softmax(self.weight_theta)
-            # prob_mat_clamp = torch.clamp(prob_mat, 0.05, 0.95)
             if torch.cuda.is_available():
                 prob_mat = prob_mat.to(device='cuda')
             mean_tmp = prob_mat * self.discrete_mat
@@ -266,8 +262,8 @@ class mySigmConv2d(nn.Module):
         test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
         self.test_weight = nn.Parameter(test_weight)
 
-        self.alpha = nn.Parameter(alpha)  # nn.Parameter is a Tensor that's a module parameter.
-        self.betta = nn.Parameter(betta)  # nn.Parameter is a Tensor that's a module parameter.
+        self.alpha = nn.Parameter(alpha)
+        self.betta = nn.Parameter(betta)
 
         bias = torch.Tensor(out_channels)
         self.bias = Parameter(bias)
@@ -430,11 +426,12 @@ class mySigmConv2d(nn.Module):
 
             z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
 
-            torch.backends.cudnn.deterministic = True
-            devtype = dict(device=torch.device("cuda:0"), dtype=torch.float32)
             input_pow2 = (input * input)
-            input_pow2 = input_pow2.to(**devtype)
-            sigma_square = sigma_square.to(**devtype)
+            if torch.cuda.is_available():
+                torch.backends.cudnn.deterministic = True
+                devtype = dict(device=torch.device("cuda:0"), dtype=torch.float32)
+                input_pow2 = input_pow2.to(**devtype)
+                sigma_square = sigma_square.to(**devtype)
             z1 = F.conv2d(input_pow2, sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
             epsilon = torch.rand(z1.size())
             if torch.cuda.is_available():
@@ -467,10 +464,9 @@ def train(args, model, device, train_loader, optimizer, epoch):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
-        # loss = F.nll_loss(output, target) 
         # loss = F.cross_entropy(output, target)
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
-        #       + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
+        #             + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
 
         if args.cifar10:
             loss = F.cross_entropy(output, target) + probability_decay * (torch.norm(model.conv1.alpha, 2) + torch.norm(model.conv1.betta, 2)
@@ -501,8 +497,6 @@ def train(args, model, device, train_loader, optimizer, epoch):
 
 def test(model, device, test_loader, test_mode):
     if test_mode:
-        # model.conv1.test_mode_switch()
-        # model.conv2.test_mode_switch()
         print ("evaluating with Test Model Parameters")
     else:
         print ("evaluating with Train Model Parameters")
@@ -530,12 +524,9 @@ def find_weights(w, my_prints=False):
         print("w: " + str(w))
         print(w.size())
         print(type(w))
-
-    # e^alpha + e^betta + e^gamma = 1
-
+    # note: e^alpha + e^betta + e^gamma = 1
     p_max = 0.95
     p_min = 0.05
-    # w_norm = w / torch.sqrt(torch.var(w))
     w_norm = w / torch.std(w)
     e_alpha = p_max - ((p_max - p_min) * torch.abs(w_norm))
     if my_prints:
@@ -570,7 +561,6 @@ def find_weights(w, my_prints=False):
     if my_prints:
         print("theta: " + str(theta))
         print("theta.shape: " + str(np.shape(theta)))
-    # exit(1)
     return theta
 
 
@@ -584,15 +574,14 @@ def find_sigm_weights(w, my_prints=False):
     p_min = 0.05
     w_norm = w / torch.std(w)
     e_alpha = p_max - ((p_max - p_min) * torch.abs(w_norm))
+    e_betta = 0.5 * (1 + (w_norm / (1 - e_alpha)))
     if my_prints:
         print("alpha: " + str(alpha))
-    e_betta = 0.5 * (1 + (w_norm / (1 - e_alpha)))
     e_alpha = torch.clamp(e_alpha, p_min, p_max)
     if my_prints:
         print("alpha.clip: " + str(e_alpha))
         print("alpha.size: " + str(e_alpha.size()))
 
-    # e_betta = 0.5 * (1 + (w_norm / (1 - e_alpha)))
     if my_prints:
         print("e_betta: " + str(e_betta))
     e_betta = torch.clamp(e_betta, p_min, p_max)
