@@ -466,8 +466,6 @@ def train(args, model, device, train_loader, optimizer, epoch):
         optimizer.zero_grad()
         output = model(data)
         # loss = F.cross_entropy(output, target)
-        # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
-        #             + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
 
         if args.cifar10:
             loss = F.cross_entropy(output, target) + probability_decay * (torch.norm(model.conv1.alpha, 2) + torch.norm(model.conv1.betta, 2)
@@ -478,10 +476,12 @@ def train(args, model, device, train_loader, optimizer, epoch):
                                                  + torch.norm(model.conv6.alpha, 2) + torch.norm(model.conv6.betta, 2)) \
                                                  + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
         else:
-            loss = F.cross_entropy(output, target) + probability_decay * (torch.norm(model.conv1.alpha, 2)
-                                                               + torch.norm(model.conv1.betta, 2)
-                                                               + torch.norm(model.conv2.alpha, 2)
-                                                               + torch.norm(model.conv2.betta, 2)) + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
+            loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
+                        + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
+            # loss = F.cross_entropy(output, target) + probability_decay * (torch.norm(model.conv1.alpha, 2)
+            #                                                    + torch.norm(model.conv1.betta, 2)
+            #                                                    + torch.norm(model.conv2.alpha, 2)
+            #                                                    + torch.norm(model.conv2.betta, 2)) + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
 
         if args.debug_mode:
             torch.autograd.set_detect_anomaly(True)
