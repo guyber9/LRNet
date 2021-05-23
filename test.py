@@ -60,8 +60,9 @@ def test():
         model.conv2.test_mode_switch()
         accu = my.test(model, device, test_loader, True)
         print ("accu: " + str(accu))
-        if accu >= 90.0:
+        if accu >= 99.4:
             print ("you have it")
+            torch.save(model.state_dict(), "mnist_interim_model.pt")
     exit(1)
 
     print ("###################################")
