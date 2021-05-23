@@ -469,7 +469,10 @@ def train(args, model, device, train_loader, optimizer, epoch):
         #             + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
 
         if args.cifar10:
-            loss = F.cross_entropy(output, target) + probability_decay * (torch.norm(model.conv1.alpha, 2) + torch.norm(model.conv1.betta, 2)
+            if args.full_prec:
+                loss = F.cross_entropy(output, target)
+            else:
+                loss = F.cross_entropy(output, target) + probability_decay * (torch.norm(model.conv1.alpha, 2) + torch.norm(model.conv1.betta, 2)
                                                  + torch.norm(model.conv2.alpha, 2) + torch.norm(model.conv2.betta, 2)
                                                  + torch.norm(model.conv3.alpha, 2) + torch.norm(model.conv3.betta, 2)
                                                  + torch.norm(model.conv4.alpha, 2) + torch.norm(model.conv4.betta, 2)
