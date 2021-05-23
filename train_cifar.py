@@ -56,7 +56,6 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn6(x)
         x = F.max_pool2d(x, 2) # 512 x 4 x 4 (= 8192)
         x = F.relu(x)
-        x = self.dropout2(x)
 
         x = torch.flatten(x, 1) # 8192
         x = self.dropout1(x)
@@ -202,7 +201,7 @@ def main():
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
     if args.full_prec:
-        print ("Training Net")
+        print ("Training FPNet_CIFAR10")
         model = FPNet_CIFAR10().to(device)
         optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
     else:
