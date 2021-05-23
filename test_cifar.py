@@ -16,6 +16,9 @@ def test():
                         help='disables CUDA training')
     parser.add_argument('--seed', type=int, default=1, metavar='S',
                         help='random seed (default: 1)')
+    parser.add_argument('--full-prec', action='store_true', default=False,
+                        help='For Training Full Precision Model')
+
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     torch.manual_seed(args.seed)
@@ -31,8 +34,12 @@ def test():
         train_kwargs.update(cuda_kwargs)
         test_kwargs.update(cuda_kwargs)
 
-    model = my_cifar.LRNet_CIFAR10().to(device)
-    model.load_state_dict(torch.load('./cifar10_cnn.pt'))
+    if args.full_prec:
+        model = my_cifar.FPNet_CIFAR10().to(device)
+        model.load_state_dict(torch.load('./cifar10_full_prec.pt'))
+    else:
+        model = my_cifar.LRNet_CIFAR10().to(device)
+        model.load_state_dict(torch.load('./cifar10_cnn.pt'))
     model.eval()
 
     transform = transforms.Compose([
@@ -56,12 +63,13 @@ def test():
     print ("train Data Set")
     my.test(model, device, train_loader, True)
 
-    model.conv1.test_mode_switch()
-    model.conv2.test_mode_switch()
-    model.conv3.test_mode_switch()
-    model.conv4.test_mode_switch()
-    model.conv5.test_mode_switch()
-    model.conv6.test_mode_switch()
+    if not args.full_prec:
+        model.conv1.test_mode_switch()
+        model.conv2.test_mode_switch()
+        model.conv3.test_mode_switch()
+        model.conv4.test_mode_switch()
+        model.conv5.test_mode_switch()
+        model.conv6.test_mode_switch()
 
     print ("###################################")
     print ("Ternary Model")

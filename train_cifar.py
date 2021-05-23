@@ -38,7 +38,6 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn2(x)
         x = F.max_pool2d(x, 2) # 128 x 16 x 16
         x = F.relu(x)
-        # x = self.dropout1(x)
 
         x = self.conv3(x)  # 256 x 16 x 16
         x = self.bn3(x)
@@ -47,7 +46,6 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn4(x)
         x = F.max_pool2d(x, 2) # 256 x 8 x 8
         x = F.relu(x)
-        # x = self.dropout2(x)
 
         x = self.conv5(x)  # 512 x 8 x 8
         x = self.bn5(x)
@@ -233,30 +231,6 @@ def main():
         model.conv4.initialize_weights(alpha4, betta4)
         model.conv5.initialize_weights(alpha5, betta5)
         model.conv6.initialize_weights(alpha6, betta6)
-
-        # model.conv1.bias.copy_(state_dict['conv1.bias'])
-        # model.conv2.bias.copy_(state_dict['conv2.bias'])
-        # model.fc1.weight.copy_(state_dict['fc1.weight'])
-        # model.fc1.bias.copy_(state_dict['fc1.bias'])
-        # model.fc2.weight.copy_(state_dict['fc2.weight'])
-        # model.fc2.bias.copy_(state_dict['fc2.bias'])
-
-        # model.conv1.bias = test_model.conv1.bias
-        # model.conv2.bias = test_model.conv2.bias
-        # model.fc1.weight = test_model.fc1.weight
-        # model.fc1.bias = test_model.fc1.bias
-        # model.fc2.weight = test_model.fc2.weight
-        # model.fc2.bias = test_model.fc2.bias
-        #
-        # model.bn1.bias = test_model.bn1.bias
-        # model.bn1.weight = test_model.bn1.weight
-        # model.bn1.running_mean = test_model.bn1.running_mean
-        # model.bn1.running_var = test_model.bn1.running_var
-        #
-        # model.bn2.bias = test_model.bn2.bias
-        # model.bn2.weight = test_model.bn2.weight
-        # model.bn2.running_mean = test_model.bn2.running_mean
-        # model.bn2.running_var = test_model.bn2.running_var
 
     print ("###################################")
     print ("training..")
