@@ -62,7 +62,7 @@ def test():
         print ("accu: " + str(accu))
         if accu >= 99.4:
             print ("you have it")
-            torch.save(model.state_dict(), "mnist_interim_model.pt")
+            torch.save(model.state_dict(), "mnist_ternary_model.pt")
     exit(1)
 
     print ("###################################")
