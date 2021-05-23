@@ -25,9 +25,8 @@ class FPNet_CIFAR10(nn.Module):
         self.bn4 = nn.BatchNorm2d(256)
         self.bn5 = nn.BatchNorm2d(512)
         self.bn6 = nn.BatchNorm2d(512)
-        # self.dropout1 = nn.Dropout(0.2)
+        self.dropout1 = nn.Dropout(0.5)
         self.dropout2 = nn.Dropout(0.5)
-        self.dropout3 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(8192, 1024)
         self.fc2 = nn.Linear(1024, 10)
 
@@ -60,10 +59,10 @@ class FPNet_CIFAR10(nn.Module):
         x = self.dropout2(x)
 
         x = torch.flatten(x, 1) # 8192
-        # x = self.dropout2(x)
+        x = self.dropout1(x)
         x = self.fc1(x)  # 8192 -> 1024
         x = F.relu(x)
-        x = self.dropout3(x)
+        x = self.dropout2(x)
         x = self.fc2(x) # 1024 -> 10
         output = x
         return output
