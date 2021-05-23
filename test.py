@@ -47,15 +47,6 @@ def test():
     train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
-    for idx in range(1,10+1):
-        model.conv1.test_mode_switch()
-        model.conv2.test_mode_switch()
-        accu = my.test(model, device, test_loader, True)
-        print ("accu: " + str(accu))
-        if accu >= 90.0:
-            print ("you have it")
-    exit(1)
-
     print ("###################################")
     print ("Original Trained Model (no ternary)")
     print ("###################################")
@@ -64,7 +55,14 @@ def test():
     print ("train Data Set")
     my.test(model, device, train_loader, True)
 
-
+    for idx in range(1,10+1):
+        model.conv1.test_mode_switch()
+        model.conv2.test_mode_switch()
+        accu = my.test(model, device, test_loader, True)
+        print ("accu: " + str(accu))
+        if accu >= 90.0:
+            print ("you have it")
+    exit(1)
 
     print ("###################################")
     print ("Ternary Model")
