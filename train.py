@@ -131,7 +131,7 @@ def main():
     scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         my.train(args, model, device, train_loader, optimizer, epoch)
-        my.test(model, device, test_loader, False)
+        my.test(model, device, test_loader, True)
         if ((epoch % 20) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
             torch.save(model.state_dict(), "tmp_models/mnist_interim_model.pt")

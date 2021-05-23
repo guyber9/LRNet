@@ -55,13 +55,13 @@ def test():
     train_loader = torch.utils.data.DataLoader(dataset1,**train_kwargs)
     test_loader = torch.utils.data.DataLoader(dataset2, **test_kwargs)
 
-    print ("###################################")
-    print ("Original Trained Model (no ternary)")
-    print ("###################################")
-    print ("test Data Set")
-    my.test(model, device, test_loader, True)
-    print ("train Data Set")
-    my.test(model, device, train_loader, True)
+    # print ("###################################")
+    # print ("Original Trained Model (no ternary)")
+    # print ("###################################")
+    # print ("test Data Set")
+    # my.test(model, device, test_loader, True)
+    # print ("train Data Set")
+    # my.test(model, device, train_loader, False)
 
     if not args.full_prec:
         model.conv1.test_mode_switch()
@@ -76,8 +76,8 @@ def test():
     print ("###################################")
     print ("test Data Set")
     my.test(model, device, test_loader, True)
-    print ("train Data Set")
-    my.test(model, device, train_loader, True)
+    # print ("train Data Set")
+    # my.test(model, device, train_loader, False)
 
 if __name__ == '__main__':
     test()

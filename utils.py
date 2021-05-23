@@ -7,6 +7,7 @@ from torch.nn import functional as F
 from torch.nn import init
 import numpy as np
 import numpy as np
+import myLRnet as my_nn
 
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
@@ -157,3 +158,61 @@ def print_full_tensor(input, input_name):
         for j, val2 in enumerate(val1):
             for m, val3 in enumerate(val2):
                 print ("input_name(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+
+
+def initialize_mnist (model, use_cuda, device, softmax_prob):
+        test_model = my_nn.FPNet().to(device)
+        if use_cuda:
+            test_model.load_state_dict(torch.load('tmp_models/mnist_full_prec.pt'))
+        else:
+            test_model.load_state_dict(torch.load('tmp_models/mnist_full_prec_no_cuda.pt'))
+        test_model.eval()
+        # state_dict = torch.load('tmp_models/mnist_full_prec.pt')
+
+        if softmax_prob:
+            theta1 = find_weights(test_model.conv1.weight, False)
+            theta2 = find_weights(test_model.conv2.weight, False)
+            model.conv1.initialize_weights(theta1)
+            model.conv2.initialize_weights(theta2)
+        else:
+            alpha1, betta1 = find_sigm_weights(test_model.conv1.weight, False)
+            alpha2, betta2 = find_sigm_weights(test_model.conv2.weight, False)
+            model.conv1.initialize_weights(alpha1, betta1)
+            model.conv2.initialize_weights(alpha2, betta2)
+
+        # model.conv1.bias = test_model.conv1.bias
+        # model.conv2.bias = test_model.conv2.bias
+        # model.fc1.weight = test_model.fc1.weight
+        # model.fc1.bias = test_model.fc1.bias
+        # model.fc2.weight = test_model.fc2.weight
+        # model.fc2.bias = test_model.fc2.bias
+        #
+        # model.bn1.bias = test_model.bn1.bias
+        # model.bn1.weight = test_model.bn1.weight
+        # model.bn1.running_mean = test_model.bn1.running_mean
+        # model.bn1.running_var = test_model.bn1.running_var
+        #
+        # model.bn2.bias = test_model.bn2.bias
+        # model.bn2.weight = test_model.bn2.weight
+        # model.bn2.running_mean = test_model.bn2.running_mean
+        # model.bn2.running_var = test_model.bn2.running_var
+        return model
+
+
+def store_model(model, is_cifar10, full_prec, use_cuda):
+      if is_cifar10:
+        if full_prec:
+            if use_cuda:
+                torch.save(model.state_dict(), "tmp_models/cifar10_full_prec.pt")
+            else:
+                torch.save(model.state_dict(), "tmp_models/cifar10_full_prec_no_cuda.pt")
+        else:
+            torch.save(model.state_dict(), "tmp_models/cifar10_cnn.pt")
+      else:
+          if full_prec:
+              if use_cuda:
+                  torch.save(model.state_dict(), "tmp_models/mnist_full_prec.pt")
+              else:
+                  torch.save(model.state_dict(), "tmp_models/mnist_full_prec_no_cuda.pt")
+          else:
+              torch.save(model.state_dict(), "tmp_models/mnist_cnn.pt")
