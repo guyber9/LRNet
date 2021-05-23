@@ -97,8 +97,8 @@ def main():
         alpha1, betta1 = my.find_sigm_weights(test_model.conv1.weight, False)
         alpha2, betta2 = my.find_sigm_weights(test_model.conv2.weight, False)
 
-        model.conv1.initialize_weights(alpha1, betta1)
-        model.conv2.initialize_weights(alpha2, betta2)
+        # model.conv1.initialize_weights(alpha1, betta1) # TODO
+        # model.conv2.initialize_weights(alpha2, betta2) # TODO
 
         # model.conv1.bias.copy_(state_dict['conv1.bias'])
         # model.conv2.bias.copy_(state_dict['conv2.bias'])
@@ -107,22 +107,22 @@ def main():
         # model.fc2.weight.copy_(state_dict['fc2.weight'])
         # model.fc2.bias.copy_(state_dict['fc2.bias'])
 
-        # model.conv1.bias = test_model.conv1.bias
-        # model.conv2.bias = test_model.conv2.bias
-        # model.fc1.weight = test_model.fc1.weight
-        # model.fc1.bias = test_model.fc1.bias
-        # model.fc2.weight = test_model.fc2.weight
-        # model.fc2.bias = test_model.fc2.bias
-        #
-        # model.bn1.bias = test_model.bn1.bias
-        # model.bn1.weight = test_model.bn1.weight
-        # model.bn1.running_mean = test_model.bn1.running_mean
-        # model.bn1.running_var = test_model.bn1.running_var
-        #
-        # model.bn2.bias = test_model.bn2.bias
-        # model.bn2.weight = test_model.bn2.weight
-        # model.bn2.running_mean = test_model.bn2.running_mean
-        # model.bn2.running_var = test_model.bn2.running_var
+        model.conv1.bias = test_model.conv1.bias
+        model.conv2.bias = test_model.conv2.bias
+        model.fc1.weight = test_model.fc1.weight
+        model.fc1.bias = test_model.fc1.bias
+        model.fc2.weight = test_model.fc2.weight
+        model.fc2.bias = test_model.fc2.bias
+
+        model.bn1.bias = test_model.bn1.bias
+        model.bn1.weight = test_model.bn1.weight
+        model.bn1.running_mean = test_model.bn1.running_mean
+        model.bn1.running_var = test_model.bn1.running_var
+
+        model.bn2.bias = test_model.bn2.bias
+        model.bn2.weight = test_model.bn2.weight
+        model.bn2.running_mean = test_model.bn2.running_mean
+        model.bn2.running_var = test_model.bn2.running_var
 
     print ("###################################")
     print ("training..")

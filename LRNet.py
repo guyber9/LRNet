@@ -48,10 +48,10 @@ class LRNet(nn.Module):
 
     def __init__(self):
         super(LRNet, self).__init__()
-        # self.conv1 = myConv2d(1, 32, 5, 1)
-        # self.conv2 = myConv2d(32, 64, 5, 1)
-        self.conv1 = mySigmConv2d(1, 32, 5, 1)
-        self.conv2 = mySigmConv2d(32, 64, 5, 1)
+        self.conv1 = myConv2d(1, 32, 5, 1)
+        self.conv2 = myConv2d(32, 64, 5, 1)
+        # self.conv1 = mySigmConv2d(1, 32, 5, 1)
+        # self.conv2 = mySigmConv2d(32, 64, 5, 1)
         self.dropout1 = nn.Dropout(0.5)
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(1024, 512)
@@ -90,7 +90,7 @@ class myConv2d(nn.Module):
         padding: _size_2_t = 0,
         dilation: _size_2_t = 1,
         groups: int = 1,
-        clusters: int = 3,
+        clusters: int = 7, #3,
         test_forward: bool = False,
     ):
         super().__init__()
@@ -110,7 +110,8 @@ class myConv2d(nn.Module):
         self.weight_theta = nn.Parameter(weight_theta)  # nn.Parameter is a Tensor that's a module parameter.
         bias = torch.Tensor(out_channels)
         self.bias = Parameter(bias)
-        self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]])
+        # self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]])
+        self.discrete_val = torch.tensor([[-1.0, -0.5, -0.25, 0.0, 0.25, 0.5, 1.0]])
         self.discrete_val.requires_grad = False
         # self.discrete_square_val = torch.tensor([[1.0, 0.0, 1.0]], dtype=torch.float32)
         self.discrete_square_val = self.discrete_val * self.discrete_val

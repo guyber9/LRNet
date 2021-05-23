@@ -92,8 +92,6 @@ class LRNet_CIFAR10(nn.Module):
 
     def forward(self, x):
         # print ("#######################################################")
-        # print ("#######################################################")
-        # print ("#######################################################")
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
         #print ("x: " + str(x))
         # for i,val1 in enumerate(x):
@@ -156,31 +154,6 @@ class LRNet_CIFAR10(nn.Module):
         return output
 
 def main():
-
-    # import gzip
-    # import torch
-    # import torch.nn.functional as F
-    #
-    # # change these
-    # torch.backends.cudnn.deterministic = False
-    # devtype = dict(device=torch.device("cuda:0"), dtype=torch.float32)
-    #
-    # # x -- zeros with a spike
-    # x = torch.zeros(1024, 1, 12, 12).to(**devtype)
-    # x[..., 5, 5] = 1.
-    #
-    # # small nonnegative values
-    # w = (torch.ones(1, 1, 4, 4) * 1e-3).to(**devtype)
-    # assert x.ge(0).all() and w.ge(0).all()
-    #
-    # # conv1d/2d
-    # result = F.conv2d(x, w, None)
-    #
-    # for i,val1 in enumerate(result):
-    #     for j,val2 in enumerate(val1):
-    #         for m,val3 in enumerate(val2):
-    #             print ("result(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-    # exit(1)
 
     # Training settings
     parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Example')
