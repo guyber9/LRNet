@@ -7,6 +7,7 @@ from torch.optim.lr_scheduler import StepLR
 import LRNet as my
 from torch.nn import functional as F
 import torch.nn as nn
+import utils as utils
 
 class FPNet_CIFAR10(nn.Module):
 
@@ -84,44 +85,25 @@ class LRNet_CIFAR10(nn.Module):
         self.bn4 = nn.BatchNorm2d(256)
         self.bn5 = nn.BatchNorm2d(512)
         self.bn6 = nn.BatchNorm2d(512)
-        self.dropout1 = nn.Dropout(0.4)
-        self.dropout2 = nn.Dropout(0.4)
-        self.dropout3 = nn.Dropout(0.5)
+        self.dropout1 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(8192, 1024)
         self.fc2 = nn.Linear(1024, 10)
 
-    def forward(self, x):
-        # print ("#######################################################")
-        x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
-        #print ("x: " + str(x))
-        # for i,val1 in enumerate(x):
-        #     for j,val2 in enumerate(val1):
-        #         for m,val3 in enumerate(val2):
-        #             print ("x(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-        # print ("x: " + str(x))
-        x = self.bn1(x)
-        # for i, val1 in enumerate(x):
-        #     for j, val2 in enumerate(val1):
-        #         for m, val3 in enumerate(val2):
-        #             print("x_bn1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-        #print ("x_bn1: " + str(x))
 
+    def forward(self, x):
+        x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
+        # utils.print_full_tensor(x, "x1")
+        x = self.bn1(x)
+        # utils.print_full_tensor(x, "x_bn1")
         x = F.relu(x)
         x = self.conv2(x)  # 128 x 32 x 32
-        # torch.set_printoptions(threshold=100000)
-        # print ("x2: " + str(x))
-        # for i,val1 in enumerate(x):
-        #     for j,val2 in enumerate(val1):
-        #         for m,val3 in enumerate(val2):
-        #             print ("x2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+        # utils.print_full_tensor(x, "x2")
         x = self.bn2(x)
-        # print ("x_bn2: " + str(x))
+        # utils.print_full_tensor(x, "x_bn2")
         x = F.max_pool2d(x, 2)  # 128 x 16 x 16
         x = F.relu(x)
-        x = self.dropout1(x)
-
-        #print ("x3: " + str(x))
-
+        # x = self.dropout1(x)
         x = self.conv3(x)  # 256 x 16 x 16
         x = self.bn3(x)
         x = F.relu(x)
@@ -129,10 +111,7 @@ class LRNet_CIFAR10(nn.Module):
         x = self.bn4(x)
         x = F.max_pool2d(x, 2)  # 256 x 8 x 8
         x = F.relu(x)
-        x = self.dropout2(x)
-
-        #print ("x5: " + str(x))
-
+        # x = self.dropout2(x)
         x = self.conv5(x)  # 512 x 8 x 8
         x = self.bn5(x)
         x = F.relu(x)
@@ -140,17 +119,14 @@ class LRNet_CIFAR10(nn.Module):
         x = self.bn6(x)
         x = F.max_pool2d(x, 2)  # 512 x 4 x 4 (= 8192)
         x = F.relu(x)
-        x = self.dropout3(x)
-        
-        #print ("x7: " + str(x))
 
         x = torch.flatten(x, 1)  # 8192
-        # x = self.dropout2(x)
+        x = self.dropout1(x)
         x = self.fc1(x)  # 8192 -> 1024
         x = F.relu(x)
+        x = self.dropout2(x)
         x = self.fc2(x)  # 1024 -> 10
         output = x
-        # print ("output: " + str(output))
         return output
 
 def main():

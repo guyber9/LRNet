@@ -517,6 +517,7 @@ def test(model, device, test_loader, test_mode):
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
+    return (100. * correct / len(test_loader.dataset))
 
 
 def find_weights(w, my_prints=False):
