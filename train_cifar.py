@@ -212,11 +212,11 @@ def main():
     if args.load_pre_trained:
         test_model = FPNet_CIFAR10().to(device)
         if use_cuda:
-            test_model.load_state_dict(torch.load('./cifar10_full_prec.pt'))
+            test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec.pt'))
         else:
-            test_model.load_state_dict(torch.load('./cifar10_full_prec_no_cuda.pt'))
+            test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec_no_cuda.pt'))
         test_model.eval()
-        # state_dict = torch.load('./cifar10_full_prec.pt')
+        # state_dict = torch.load('tmp_models/cifar10_full_prec.pt')
 
         alpha1, betta1 = my.find_sigm_weights(test_model.conv1.weight, False)
         alpha2, betta2 = my.find_sigm_weights(test_model.conv2.weight, False)
@@ -242,18 +242,18 @@ def main():
         my.test(model, device, test_loader, False)
         if ((epoch % 30) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
-            torch.save(model.state_dict(), "cifar10_interim_model.pt")
+            # torch.save(model.state_dict(), "tmp_models/cifar10_interim_model.pt")
             my.test(model, device, train_loader, False)
         # my.test(model, device, test_loader, True)
         scheduler.step()
 
     if args.full_prec:
         if use_cuda:
-            torch.save(model.state_dict(), "cifar10_full_prec.pt")
+            torch.save(model.state_dict(), "tmp_models/cifar10_full_prec.pt")
         else:
-            torch.save(model.state_dict(), "cifar10_full_prec_no_cuda.pt")
+            torch.save(model.state_dict(), "tmp_models/cifar10_full_prec_no_cuda.pt")
     else:
-        torch.save(model.state_dict(), "cifar10_cnn.pt")
+        torch.save(model.state_dict(), "tmp_models/cifar10_cnn.pt")
 
 if __name__ == '__main__':
     main()

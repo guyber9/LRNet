@@ -31,7 +31,7 @@ def test():
         test_kwargs.update(cuda_kwargs)
 
     model = my.LRNet().to(device)
-    model.load_state_dict(torch.load('./mnist_cnn.pt'))
+    model.load_state_dict(torch.load('tmp_models/mnist_cnn.pt'))
     # model.load_state_dict(torch.load('saved_model/mnist_ternary_97.pt'))
     model.eval()
 
@@ -62,7 +62,7 @@ def test():
         print ("accu: " + str(accu))
         if accu >= 99.4:
             print ("you have it")
-            torch.save(model.state_dict(), "mnist_ternary_model.pt")
+            torch.save(model.state_dict(), "tmp_models/mnist_ternary_model.pt")
     exit(1)
 
     print ("###################################")

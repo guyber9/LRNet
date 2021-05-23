@@ -36,10 +36,10 @@ def test():
 
     if args.full_prec:
         model = my_cifar.FPNet_CIFAR10().to(device)
-        model.load_state_dict(torch.load('./cifar10_full_prec.pt'))
+        model.load_state_dict(torch.load('tmp_models/cifar10_full_prec.pt'))
     else:
         model = my_cifar.LRNet_CIFAR10().to(device)
-        model.load_state_dict(torch.load('./cifar10_cnn.pt'))
+        model.load_state_dict(torch.load('tmp_models/cifar10_cnn.pt'))
     model.eval()
 
     transform = transforms.Compose([

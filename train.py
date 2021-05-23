@@ -82,11 +82,11 @@ def main():
     if args.load_pre_trained:
         test_model = my.FPNet().to(device)
         if use_cuda:
-            test_model.load_state_dict(torch.load('./mnist_full_prec.pt'))
+            test_model.load_state_dict(torch.load('tmp_models/mnist_full_prec.pt'))
         else:
-            test_model.load_state_dict(torch.load('./mnist_full_prec_no_cuda.pt'))
+            test_model.load_state_dict(torch.load('tmp_models/mnist_full_prec_no_cuda.pt'))
         test_model.eval()
-        # state_dict = torch.load('./mnist_full_prec.pt')
+        # state_dict = torch.load('tmp_models/mnist_full_prec.pt')
 
         # theta1 = my.find_weights(test_model.conv1.weight, False)
         # theta2 = my.find_weights(test_model.conv2.weight, False)
@@ -134,17 +134,17 @@ def main():
         my.test(model, device, test_loader, False)
         if ((epoch % 20) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
-            torch.save(model.state_dict(), "mnist_interim_model.pt")
+            torch.save(model.state_dict(), "tmp_models/mnist_interim_model.pt")
             my.test(model, device, train_loader, False)
         scheduler.step()
 
     if args.full_prec:
         if use_cuda:
-            torch.save(model.state_dict(), "mnist_full_prec.pt")
+            torch.save(model.state_dict(), "tmp_models/mnist_full_prec.pt")
         else:
-            torch.save(model.state_dict(), "mnist_full_prec_no_cuda.pt")
+            torch.save(model.state_dict(), "tmp_models/mnist_full_prec_no_cuda.pt")
     else:
-        torch.save(model.state_dict(), "mnist_cnn.pt")
+        torch.save(model.state_dict(), "tmp_models/mnist_cnn.pt")
 
 if __name__ == '__main__':
     main()
