@@ -155,10 +155,9 @@ def main():
                         help='For Training Full Precision Model')
     parser.add_argument('--load-pre-trained', action='store_true', default=False,
                         help='For Loading Params from Trained Full Precision Model')
-    parser.add_argument('--debug-mode', action='store_true', default=False,
-                        help='For Debug Mode')
-    parser.add_argument('--cifar10', action='store_true', default=True,
-                        help='cifar10 flag')
+    parser.add_argument('--debug-mode', action='store_true', default=False, help='For Debug Mode')
+    parser.add_argument('--cifar10', action='store_true', default=True, help='cifar10 flag')
+    parser.add_argument('--resume', action='store_true', default=False, help='resume model flag')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -232,6 +231,10 @@ def main():
         model.conv5.initialize_weights(alpha5, betta5)
         model.conv6.initialize_weights(alpha6, betta6)
 
+    if args.resume:
+        print("Resume Model: LRNet")
+        model.load_state_dict(torch.load('tmp_models/cifar10_cnn.pt'))
+
     print ("###################################")
     print ("training..")
     print ("num of epochs: " + str(args.epochs))
@@ -244,7 +247,6 @@ def main():
             print("Accuracy on train data:")
             # torch.save(model.state_dict(), "tmp_models/cifar10_interim_model.pt")
             my.test(model, device, train_loader, False)
-        # my.test(model, device, test_loader, True)
         scheduler.step()
 
     if args.full_prec:
