@@ -330,7 +330,7 @@ class mySigmConv2d(nn.Module):
                         else:
                             np_theta = theta.detach().numpy().tolist()
                         values_arr = np.random.default_rng().multinomial(10, np_theta)
-                        values = np.nanargmax(values_arr) - 1
+                        values = np.nanargmax(values_arr)  # TODO - 1
                         my_array_2.append(values)
                     my_array_1.append(my_array_2)
                 my_array_0.append(my_array_1)
