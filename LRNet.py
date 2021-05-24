@@ -261,19 +261,19 @@ class mySigmConv2d(nn.Module):
             alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
             betta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
 
-        test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
-        self.test_weight = nn.Parameter(test_weight)
+        # test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
+        # self.test_weight = nn.Parameter(test_weight)
 
         # self.alpha = nn.Parameter(alpha)
-        self.betta = nn.Parameter(betta)
+        # self.betta = nn.Parameter(betta)
 
         self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float, device="cuda"))
-        print(self.alpha.is_cuda)
+        self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float, device="cuda"))
+        self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float, device="cuda"))
 
         # self.alpha = self.alpha.to(device='cuda')
-        self.betta = self.betta.to(device='cuda')
-        self.test_weight = self.test_weight.to(device='cuda')
-
+        # self.betta = self.betta.to(device='cuda')
+        # self.test_weight = self.test_weight.to(device='cuda')
 
         bias = torch.Tensor(out_channels, device=cuda)
         self.bias = Parameter(bias)
@@ -297,9 +297,8 @@ class mySigmConv2d(nn.Module):
         self.discrete_mat.requires_grad = False
         self.discrete_square_mat.requires_grad = False
 
-        self.discrete_mat = self.discrete_mat.to(device='cuda')
-        self.discrete_square_mat = self.discrete_square_mat.to(device='cuda')
-
+        self.discrete_mat = self.discrete_mat
+        self.discrete_square_mat = self.discrete_square_mat
 
         self.softmax = torch.nn.Softmax(dim=4)
         self.sigmoid = torch.nn.Sigmoid()
