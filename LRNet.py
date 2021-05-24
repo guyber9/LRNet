@@ -254,8 +254,8 @@ class mySigmConv2d(nn.Module):
         transposed = True
         if transposed:
             D_0, D_1, D_2, D_3 = out_channels, in_channels, kernel_size, kernel_size
-            alpha = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1, device=cuda)
-            betta = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1, device=cuda)
+            alpha = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
+            betta = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
         else:
             D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
             alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1, device=cuda)
@@ -266,6 +266,8 @@ class mySigmConv2d(nn.Module):
 
         self.alpha = nn.Parameter(alpha)
         self.betta = nn.Parameter(betta)
+
+        print(self.alpha.is_cuda)
 
         bias = torch.Tensor(out_channels, device=cuda)
         self.bias = Parameter(bias)
