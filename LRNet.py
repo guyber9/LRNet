@@ -249,26 +249,28 @@ class mySigmConv2d(nn.Module):
         self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
         self.test_forward = test_forward
 
+        cuda = torch.device('cuda')
+
         transposed = True
         if transposed:
             D_0, D_1, D_2, D_3 = out_channels, in_channels, kernel_size, kernel_size
-            alpha = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
-            betta = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
+            alpha = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1, device=cuda)
+            betta = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1, device=cuda)
         else:
             D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
-            alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
-            betta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
+            alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1, device=cuda)
+            betta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1, device=cuda)
 
-        test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
+        test_weight = torch.Tensor(D_0, D_1, D_2, D_3, device=cuda)
         self.test_weight = nn.Parameter(test_weight)
 
         self.alpha = nn.Parameter(alpha)
         self.betta = nn.Parameter(betta)
 
-        bias = torch.Tensor(out_channels)
+        bias = torch.Tensor(out_channels, device=cuda)
         self.bias = Parameter(bias)
 
-        self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]])
+        self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]], device=cuda)
         self.discrete_val.requires_grad = False
         self.discrete_square_val = self.discrete_val * self.discrete_val
         self.discrete_square_val.requires_grad = False
