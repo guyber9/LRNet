@@ -258,14 +258,18 @@ class mySigmConv2d(nn.Module):
             betta = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
         else:
             D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
-            alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1, device=cuda)
-            betta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1, device=cuda)
+            alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
+            betta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
 
-        test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
+        test_weight = torch.Tensor(D_0, D_1, D_2, D_3, device=cuda)
         self.test_weight = nn.Parameter(test_weight)
 
         self.alpha = nn.Parameter(alpha)
         self.betta = nn.Parameter(betta)
+
+        self.alpha = self.alpha.to(device='cuda')
+        self.betta = self.betta.to(device='cuda')
+        self.test_weight = self.test_weight.to(device='cuda')
 
         print(self.alpha.is_cuda)
 
