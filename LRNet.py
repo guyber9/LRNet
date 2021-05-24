@@ -271,11 +271,11 @@ class mySigmConv2d(nn.Module):
         self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float, device="cuda"))
         self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float, device="cuda"))
 
-        # self.alpha = self.alpha.to(device='cuda')
+        # self.alpha = self.alpha.to(devic  e='cuda')
         # self.betta = self.betta.to(device='cuda')
         # self.test_weight = self.test_weight.to(device='cuda')
 
-        bias = torch.Tensor(out_channels, device=cuda)
+        bias = torch.Tensor(out_channels)
         self.bias = Parameter(bias)
 
         self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]])
