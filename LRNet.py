@@ -261,7 +261,7 @@ class mySigmConv2d(nn.Module):
             alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1, device=cuda)
             betta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1, device=cuda)
 
-        test_weight = torch.Tensor(D_0, D_1, D_2, D_3, device=cuda)
+        test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
         self.test_weight = nn.Parameter(test_weight)
 
         self.alpha = nn.Parameter(alpha)
