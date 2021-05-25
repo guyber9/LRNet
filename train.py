@@ -5,6 +5,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 import LRNet as my
+import torch.nn as nn
 
 def main():
     # Training settings
@@ -130,7 +131,8 @@ def main():
     print ("###################################")
     scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
-        my.train(args, model, device, train_loader, optimizer, epoch)
+        net = nn.DataParallel(model)
+        my.train(args, net, device, train_loader, optimizer, epoch)
         my.test(model, device, test_loader, True)
         if ((epoch % 20) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")

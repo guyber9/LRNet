@@ -300,7 +300,6 @@ class mySigmConv2d(nn.Module):
         self.discrete_mat = self.discrete_mat
         self.discrete_square_mat = self.discrete_square_mat
 
-        self.softmax = torch.nn.Softmax(dim=4)
         self.sigmoid = torch.nn.Sigmoid()
 
         self.reset_parameters()
