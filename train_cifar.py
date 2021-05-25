@@ -40,7 +40,7 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn2(x)
         x = F.max_pool2d(x, 2) # 128 x 16 x 16
         x = F.relu(x)
-        x = F.dropout3(x)
+        x = self.dropout3(x)
 
         x = self.conv3(x)  # 256 x 16 x 16
         x = self.bn3(x)
@@ -49,7 +49,7 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn4(x)
         x = F.max_pool2d(x, 2) # 256 x 8 x 8
         x = F.relu(x)
-        x = F.dropout4(x)
+        x = self.dropout4(x)
 
         x = self.conv5(x)  # 512 x 8 x 8
         x = self.bn5(x)
