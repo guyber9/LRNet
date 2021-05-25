@@ -361,8 +361,8 @@ class mySigmConv2d(nn.Module):
 
     def initialize_weights(self, alpha, betta) -> None:
         print ("Initialize Weights")
-        self.alpha = nn.Parameter(torch.tensor(alpha, dtype=torch.float32))
-        self.betta = nn.Parameter(torch.tensor(betta, dtype=torch.float32))
+        self.alpha = nn.Parameter(torch.tensor(alpha, dtype=torch.float32, device="cuda"))
+        self.betta = nn.Parameter(torch.tensor(betta, dtype=torch.float32, device="cuda"))
 
     def forward(self, input: Tensor) -> Tensor:
         if self.test_forward:
