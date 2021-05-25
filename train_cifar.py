@@ -29,8 +29,8 @@ class FPNet_CIFAR10(nn.Module):
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(8192, 1024)
         self.fc2 = nn.Linear(1024, 10)
-        self.dropout3 = nn.Dropout(0.2)
-        self.dropout4 = nn.Dropout(0.2)
+        self.dropout3 = nn.Dropout(0.4)
+        self.dropout4 = nn.Dropout(0.4)
 
     def forward(self, x):
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 3 

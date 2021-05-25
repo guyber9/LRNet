@@ -58,6 +58,8 @@ class LRNet(nn.Module):
         self.fc2 = nn.Linear(512, 10)
         self.bn1 = nn.BatchNorm2d(32)
         self.bn2 = nn.BatchNorm2d(64)
+        self.conv1.cuda(0)
+        self.conv1.cuda(1)
 
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
@@ -402,9 +404,9 @@ class mySigmConv2d(nn.Module):
             # print("prob_mat: " + str(prob_mat))
 
             # E[X] calc
-            self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
-            print ("prob_mat: " + str(prob_mat.get_device()))
-            print ("self.discrete_mat: " + str(self.discrete_mat.get_device()))
+            # self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
+            # print ("prob_mat: " + str(prob_mat.get_device()))
+            # print ("self.discrete_mat: " + str(self.discrete_mat.get_device()))
             mean_tmp = prob_mat * self.discrete_mat
             mean = torch.sum(mean_tmp, dim=4)
 
@@ -482,7 +484,8 @@ def train(args, model, device, train_loader, optimizer, epoch):
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-        parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
+        # parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
+        parallel_net = model
         optimizer.zero_grad()
         output = parallel_net(data)
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
