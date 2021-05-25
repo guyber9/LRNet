@@ -474,8 +474,10 @@ def train(args, model, device, train_loader, optimizer, epoch):
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
+        parallel_net = nn.DataParallel(myNet, gpu_ids=[0, 1, 2, 3])
+        net = parallel_net(model)
         optimizer.zero_grad()
-        output = model(data)
+        output = net(data)
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
         #             + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
 
