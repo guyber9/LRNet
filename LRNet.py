@@ -287,7 +287,7 @@ class mySigmConv2d(nn.Module):
         discrete_mat = self.discrete_val.unsqueeze(1).repeat(D_0, D_1, D_2, D_3, 1)
         discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(D_0, D_1, D_2, D_3, 1)
 
-        self.discrete_mat = nn.Parameter(discrete_mat, dtype=torch.float, device="cuda")
+        self.discrete_mat = nn.Parameter(torch.full(discrete_mat), dtype=torch.float, device="cuda")
         self.discrete_square_mat = nn.Parameter(discrete_square_mat, dtype=torch.float, device="cuda")
 
         self.discrete_mat.requires_grad = False
