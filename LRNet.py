@@ -290,13 +290,13 @@ class mySigmConv2d(nn.Module):
         # self.discrete_mat = nn.Parameter(torch.full(discrete_mat), dtype=torch.float, device="cuda")
         # self.discrete_square_mat = nn.Parameter(discrete_square_mat, dtype=torch.float, device="cuda")
 
-        prob = torch.nn.Parameter(torch.tensor([-1.0, 0.0, 1.0], dtype=torch.float, device="cuda"))
+        prob = torch.nn.Parameter(torch.tensor([-1.0, 0.0, 1.0], requires_grad=False, dtype=torch.float, device="cuda"))
         prob_square = prob * prob
         self.discrete_mat = prob.repeat(D_0, D_1, D_2, D_3, 1)
         self.discrete_square_mat = prob_square.repeat(D_0, D_1, D_2, D_3, 1)
 
-        self.discrete_mat.requires_grad = False
-        self.discrete_square_mat.requires_grad = False
+        # self.discrete_mat.requires_grad = False
+        # self.discrete_square_mat.requires_grad = False
 
         print ("self.alpha: " + str(self.alpha.is_cuda))
         print ("self.betta: " + str(self.betta.is_cuda))
