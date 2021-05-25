@@ -402,6 +402,8 @@ class mySigmConv2d(nn.Module):
             # print("prob_mat: " + str(prob_mat))
 
             # E[X] calc
+            print ("prob_mat: " + str(prob_mat.get_device()))
+            print ("self.discrete_mat: " + str(self.discrete_mat.get_device()))
             mean_tmp = prob_mat * self.discrete_mat
             mean = torch.sum(mean_tmp, dim=4)
 
