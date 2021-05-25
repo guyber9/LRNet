@@ -398,8 +398,8 @@ class mySigmConv2d(nn.Module):
             #         for m, val3 in enumerate(val2):
             #             print("prob_mat(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
-            # if torch.cuda.is_available():
-            #     prob_mat = prob_mat.to(device='cuda')
+            if torch.cuda.is_available():
+                prob_mat = prob_mat.to(device='cuda')
 
             # print("prob_mat: " + str(prob_mat))
 
