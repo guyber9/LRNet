@@ -459,6 +459,8 @@ class mySigmConv2d(nn.Module):
             epsilon = torch.rand(z1.size())
             if torch.cuda.is_available():
                 epsilon = epsilon.to(device='cuda')
+                epsilon = epsilon.to(v.get_device())
+
             m = z0
             v = torch.sqrt(z1)
             # print("z1: " + str(z1))
