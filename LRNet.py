@@ -81,7 +81,7 @@ class LRNet(nn.Module):
         x = self.dropout1(x) # move to here tmp
         x = self.fc2(x)
         output = x
-        utils.print_full_tensor(output, "output")
+        print(output)
         return output
 
 
