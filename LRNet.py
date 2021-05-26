@@ -64,11 +64,13 @@ class LRNet(nn.Module):
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
         x = self.bn1(x)
+        utils.print_full_tensor(x, "x_bn1")
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
         # x = self.dropout1(x) <= was here
         x = self.conv2(x) # 64 x 8 x 8
         x = self.bn2(x)
+        utils.print_full_tensor(x, "x_bn2")
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
         x = F.relu(x)
         x = torch.flatten(x, 1) # 1024
@@ -78,6 +80,7 @@ class LRNet(nn.Module):
         x = self.dropout1(x) # move to here tmp
         x = self.fc2(x)
         output = x
+        utils.print_full_tensor(output, "output")
         return output
 
 
@@ -470,14 +473,14 @@ class mySigmConv2d(nn.Module):
             #     for j, val2 in enumerate(val1):
             #         for m, val3 in enumerate(val2):
             #             print("m(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            for i, val1 in enumerate(z1):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("z1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            for i, val1 in enumerate(v):
-                for j, val2 in enumerate(val1):
-                    for m, val3 in enumerate(val2):
-                        print("v(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(z1):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("z1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # for i, val1 in enumerate(v):
+            #     for j, val2 in enumerate(val1):
+            #         for m, val3 in enumerate(val2):
+            #             print("v(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
 
             return m + epsilon * v
 
@@ -487,11 +490,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-
         parallel_net = nn.DataParallel(model, device_ids=[0, 1]) # 1, 2, 3])
-
-
-
         optimizer.zero_grad()
         output = parallel_net(data)
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
