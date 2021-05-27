@@ -65,13 +65,13 @@ class LRNet(nn.Module):
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
         x = self.bn1(x)
-        utils.print_full_tensor(x, "x_bn1")
+        # utils.print_full_tensor(x, "x_bn1")
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
         # x = self.dropout1(x) <= was here
         x = self.conv2(x) # 64 x 8 x 8
         x = self.bn2(x)
-        utils.print_full_tensor(x, "x_bn2")
+        # utils.print_full_tensor(x, "x_bn2")
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
         x = F.relu(x)
         x = torch.flatten(x, 1) # 1024
@@ -81,7 +81,7 @@ class LRNet(nn.Module):
         x = self.dropout1(x) # move to here tmp
         x = self.fc2(x)
         output = x
-        print(output)
+        # print("output" + str(output))
         return output
 
 
@@ -454,8 +454,8 @@ class mySigmConv2d(nn.Module):
             z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
 
             input_pow2 = (input * input)
-            if torch.cuda.is_available():
-                torch.backends.cudnn.deterministic = True
+            # if torch.cuda.is_available():
+            #     torch.backends.cudnn.deterministic = True
                 # devtype = dict(device=torch.device("cuda:0"), dtype=torch.float32)
                 # input_pow2 = input_pow2.to(**devtype)
                 # sigma_square = sigma_square.to(**devtype)
@@ -489,6 +489,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
     weight_decay = 1e-4
     probability_decay = 1e-11
+    torch.backends.cudnn.deterministic = True
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         parallel_net = nn.DataParallel(model, device_ids=[0, 1]) # 1, 2, 3])
@@ -518,6 +519,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
                                                                + torch.norm(model.conv2.betta, 2)) + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
 
         if args.debug_mode:
+            print (loss)
             torch.autograd.set_detect_anomaly(True)
             loss.backward(retain_graph=True)
         else:
