@@ -394,7 +394,7 @@ class mySigmConv2d(nn.Module):
             #     prob_mat = prob_mat.to(device='cuda')
 
             # E[X] calc
-            self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
+            # TODO: self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
             # print ("prob_mat: " + str(prob_mat.get_device()))
             # print ("self.discrete_mat: " + str(self.discrete_mat.get_device()))
             mean_tmp = prob_mat * self.discrete_mat
