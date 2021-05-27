@@ -491,7 +491,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-        parallel_net = nn.DataParallel(model, device_ids=[0]) #[0, 1]) # 1, 2, 3])
+        parallel_net = nn.DataParallel(model, device_ids=[0, 1]) # 1, 2, 3])
         optimizer.zero_grad()
         output = parallel_net(data)
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
