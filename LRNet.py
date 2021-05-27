@@ -432,7 +432,7 @@ class mySigmConv2d(nn.Module):
             z1 = F.conv2d(input_pow2, sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
 
             epsilon = torch.rand(z1.size())
-            if torch.cuda.is_available():
+            # TODO: if torch.cuda.is_available():
                 # TODO: epsilon = epsilon.to(device='cuda')
                 # TODO: epsilon = epsilon.to(z1.get_device())
 
