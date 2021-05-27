@@ -518,7 +518,6 @@ def train(args, model, device, train_loader, optimizer, epoch):
                                                                + torch.norm(model.conv2.betta, 2)) + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
 
         if args.debug_mode:
-            print (loss)
             torch.autograd.set_detect_anomaly(True)
             loss.backward(retain_graph=True)
         else:
