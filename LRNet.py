@@ -59,8 +59,8 @@ class LRNet(nn.Module):
         self.fc2 = nn.Linear(512, 10)
         self.bn1 = nn.BatchNorm2d(32)
         self.bn2 = nn.BatchNorm2d(64)
-        self.conv1.cuda(0)
-        self.conv1.cuda(1)
+        # self.conv1.cuda(0)
+        # self.conv1.cuda(1)
 
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
