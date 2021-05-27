@@ -445,15 +445,15 @@ def train(args, model, device, train_loader, optimizer, epoch):
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-        if args.parallel == 0:
+        if args.parallel_gpu == 0:
             parallel_net = model
-        elif args.parallel == 1:
+        elif args.parallel_gpu == 1:
             parallel_net = nn.DataParallel(model, device_ids=[0])
-        elif args.parallel == 2:
+        elif args.parallel_gpu == 2:
             parallel_net = nn.DataParallel(model, device_ids=[0, 1])
-        elif args.parallel == 3:
+        elif args.parallel_gpu == 3:
             parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2])
-        elif args.parallel == 4:
+        elif args.parallel_gpu == 4:
             parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
         parallel_net = model
         optimizer.zero_grad()
