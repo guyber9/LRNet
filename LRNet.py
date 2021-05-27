@@ -255,10 +255,11 @@ class mySigmConv2d(nn.Module):
         self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
         self.test_forward = test_forward
 
-        if True or torch.cuda.is_available():
-            self.device = 'cuda'
-        else:
-            self.device = 'cpu'
+        # if torch.cuda.is_available():
+        #     self.device = 'cuda'
+        # else:
+        #     self.device = 'cpu'
+        self.device = 'cpu'
 
         transposed = True
         if transposed:
