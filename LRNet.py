@@ -403,7 +403,7 @@ class mySigmConv2d(nn.Module):
             # print("mean: " + str(mean))
 
             # E[x^2]
-            self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
+            # TODO: self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
             mean_square_tmp = prob_mat * self.discrete_square_mat
             mean_square = torch.sum(mean_square_tmp, dim=4)
 
@@ -433,8 +433,8 @@ class mySigmConv2d(nn.Module):
 
             epsilon = torch.rand(z1.size())
             if torch.cuda.is_available():
-                epsilon = epsilon.to(device='cuda')
-                epsilon = epsilon.to(z1.get_device())
+                # TODO: epsilon = epsilon.to(device='cuda')
+                # TODO: epsilon = epsilon.to(z1.get_device())
 
             m = z0
             v = torch.sqrt(z1)
