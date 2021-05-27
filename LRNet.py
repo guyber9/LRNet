@@ -255,7 +255,10 @@ class mySigmConv2d(nn.Module):
         self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
         self.test_forward = test_forward
 
-        cuda = torch.device('cuda')
+        if torch.cuda.is_available():
+            self.device = 'cuda'
+        else:
+            self.device = 'apu'
 
         transposed = True
         if transposed:
@@ -273,9 +276,9 @@ class mySigmConv2d(nn.Module):
         # self.alpha = nn.Parameter(alpha)
         # self.betta = nn.Parameter(betta)
 
-        self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device="cuda"))
-        self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device="cuda"))
-        self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device="cuda"))
+        self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device=self.device))
+        self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device=self.device))
+        self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device=self.device))
 
         # self.alpha = self.alpha.to(devic  e='cuda')
         # self.betta = self.betta.to(device='cuda')
@@ -283,7 +286,7 @@ class mySigmConv2d(nn.Module):
 
         # bias = torch.Tensor(out_channels)
         # self.bias = Parameter(bias)
-        self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=torch.float, device="cuda"))
+        self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=torch.float, device=self.device))
 
         # self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]])
         # self.discrete_val.requires_grad = False
@@ -293,10 +296,10 @@ class mySigmConv2d(nn.Module):
         # discrete_mat = self.discrete_val.unsqueeze(1).repeat(D_0, D_1, D_2, D_3, 1)
         # discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(D_0, D_1, D_2, D_3, 1)
         #
-        # self.discrete_mat = nn.Parameter(torch.full(discrete_mat), dtype=torch.float, device="cuda")
-        # self.discrete_square_mat = nn.Parameter(discrete_square_mat, dtype=torch.float, device="cuda")
+        # self.discrete_mat = nn.Parameter(torch.full(discrete_mat), dtype=torch.float, device=device)
+        # self.discrete_square_mat = nn.Parameter(discrete_square_mat, dtype=torch.float, device=device)
 
-        prob = torch.nn.Parameter(torch.tensor([-1.0, 0.0, 1.0], requires_grad=False, dtype=torch.float, device="cuda"))
+        prob = torch.nn.Parameter(torch.tensor([-1.0, 0.0, 1.0], requires_grad=False, dtype=torch.float, device=self.device))
         prob_square = prob * prob
         self.discrete_mat = prob.repeat(D_0, D_1, D_2, D_3, 1)
         self.discrete_square_mat = prob_square.repeat(D_0, D_1, D_2, D_3, 1)
@@ -365,8 +368,8 @@ class mySigmConv2d(nn.Module):
 
     def initialize_weights(self, alpha, betta) -> None:
         print ("Initialize Weights")
-        self.alpha = nn.Parameter(torch.tensor(alpha, dtype=torch.float32, device="cuda"))
-        self.betta = nn.Parameter(torch.tensor(betta, dtype=torch.float32, device="cuda"))
+        self.alpha = nn.Parameter(torch.tensor(alpha, dtype=torch.float32, device=self.device))
+        self.betta = nn.Parameter(torch.tensor(betta, dtype=torch.float32, device=self.device))
 
     def forward(self, input: Tensor) -> Tensor:
         if self.test_forward:
