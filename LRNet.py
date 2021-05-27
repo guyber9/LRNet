@@ -454,8 +454,8 @@ class mySigmConv2d(nn.Module):
             z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
 
             input_pow2 = (input * input)
-            # if torch.cuda.is_available():
-            #     torch.backends.cudnn.deterministic = True
+            if torch.cuda.is_available():
+                torch.backends.cudnn.deterministic = True
                 # devtype = dict(device=torch.device("cuda:0"), dtype=torch.float32)
                 # input_pow2 = input_pow2.to(**devtype)
                 # sigma_square = sigma_square.to(**devtype)
@@ -489,10 +489,9 @@ def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
     weight_decay = 1e-4
     probability_decay = 1e-11
-    torch.backends.cudnn.deterministic = True
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-        parallel_net = nn.DataParallel(model, device_ids=[0, 1]) # 1, 2, 3])
+        parallel_net = nn.DataParallel(model, device_ids=[0]) #[0, 1]) # 1, 2, 3])
         optimizer.zero_grad()
         output = parallel_net(data)
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
