@@ -255,11 +255,11 @@ class mySigmConv2d(nn.Module):
         self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
         self.test_forward = test_forward
 
-        # if torch.cuda.is_available():
-        #     self.device = 'cuda'
-        # else:
-        #     self.device = 'cpu'
-        self.device = 'cpu'
+        if torch.cuda.is_available():
+            self.device = 'cuda'
+        else:
+            self.device = 'cpu'
+        # self.device = 'cpu'
 
         transposed = True
         if transposed:
@@ -394,7 +394,7 @@ class mySigmConv2d(nn.Module):
             #     prob_mat = prob_mat.to(device='cuda')
 
             # E[X] calc
-            # TODO: self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
+            self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
             # print ("prob_mat: " + str(prob_mat.get_device()))
             # print ("self.discrete_mat: " + str(self.discrete_mat.get_device()))
             mean_tmp = prob_mat * self.discrete_mat
@@ -403,7 +403,7 @@ class mySigmConv2d(nn.Module):
             # print("mean: " + str(mean))
 
             # E[x^2]
-            # TODO: self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
+            self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
             mean_square_tmp = prob_mat * self.discrete_square_mat
             mean_square = torch.sum(mean_square_tmp, dim=4)
 
@@ -432,9 +432,9 @@ class mySigmConv2d(nn.Module):
             z1 = F.conv2d(input_pow2, sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
 
             epsilon = torch.rand(z1.size())
-            # TODO: if torch.cuda.is_available():
-                # TODO: epsilon = epsilon.to(device='cuda')
-                # TODO: epsilon = epsilon.to(z1.get_device())
+            if torch.cuda.is_available():
+                epsilon = epsilon.to(device='cuda')
+                epsilon = epsilon.to(z1.get_device())
 
             m = z0
             v = torch.sqrt(z1)

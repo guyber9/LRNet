@@ -216,7 +216,7 @@ def main():
     if args.load_pre_trained:
         test_model = FPNet_CIFAR10().to(device)
         if use_cuda:
-            test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec.pt'))
+            test_model.load_state_dict(torch.load('tmp_models/old_cifar10_full_prec.pt'))
         else:
             test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec_no_cuda.pt'))
         test_model.eval()
