@@ -40,7 +40,7 @@ def main():
                         help='For Debug Mode')
     parser.add_argument('--cifar10', action='store_true', default=False,
                         help='cifar10 flag')
-    parser.add_argument('--parallel_gpu', type=int, default=1, metavar='N',
+    parser.add_argument('--parallel-gpu', type=int, default=1, metavar='N',
                         help='parallel_gpu (default: 1)')
 
     args = parser.parse_args()
