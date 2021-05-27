@@ -162,7 +162,8 @@ def main():
     parser.add_argument('--debug-mode', action='store_true', default=False, help='For Debug Mode')
     parser.add_argument('--cifar10', action='store_true', default=True, help='cifar10 flag')
     parser.add_argument('--resume', action='store_true', default=False, help='resume model flag')
-
+    parser.add_argument('--parallel_gpu', type=int, default=1, metavar='N',
+                        help='parallel_gpu (default: 1)')
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
