@@ -273,9 +273,9 @@ class mySigmConv2d(nn.Module):
         # self.alpha = nn.Parameter(alpha)
         # self.betta = nn.Parameter(betta)
 
-        self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float, device="cuda"))
-        self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float, device="cuda"))
-        self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float, device="cuda"))
+        self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device="cuda"))
+        self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device="cuda"))
+        self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device="cuda"))
 
         # self.alpha = self.alpha.to(devic  e='cuda')
         # self.betta = self.betta.to(device='cuda')
@@ -377,35 +377,17 @@ class mySigmConv2d(nn.Module):
             prob_betta = self.sigmoid(self.betta) * (1 - prob_alpha)
 
             # print("################################################################")
-            # print("################################################################")
-            # print("################################################################")
             # print("START")
             # print("################################################################")
             # print(self.out_channels)
-            # print (prob_alpha)
-            # print (prob_betta)
-
-            # for i, val1 in enumerate(prob_alpha):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("prob_alpha(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            #
-            # for i, val1 in enumerate(prob_betta):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("prob_betta(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
+            # utils.print_full_tensor(prob_alpha, "prob_alpha")
+            # utils.print_full_tensor(prob_betta, "prob_betta")
 
             prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
+            # utils.print_full_tensor(prob_mat, "prob_mat")
 
-            # for i, val1 in enumerate(prob_mat):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("prob_mat(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-
-            if torch.cuda.is_available():
-                prob_mat = prob_mat.to(device='cuda')
-
-            # print("prob_mat: " + str(prob_mat))
+            # if torch.cuda.is_available():
+            #     prob_mat = prob_mat.to(device='cuda')
 
             # E[X] calc
             self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
@@ -431,25 +413,9 @@ class mySigmConv2d(nn.Module):
 
             sigma_square = mean_square - mean_pow2
 
-            # for i, val1 in enumerate(mean_square):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("mean_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            # for i, val1 in enumerate(mean_pow2):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("mean_pow2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-
-            # for i, val1 in enumerate(sigma_square):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("sigma_square(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            # for i, val1 in enumerate((input * input)):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("input^2(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-
-            # print("sigma_square: " + str(sigma_square))
+            # utils.print_full_tensor(mean_square, "mean_square")
+            # utils.print_full_tensor(mean_pow2, "mean_pow2")
+            # utils.print_full_tensor(sigma_square, "sigma_square")
 
             z0 = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
 
@@ -460,6 +426,7 @@ class mySigmConv2d(nn.Module):
                 # input_pow2 = input_pow2.to(**devtype)
                 # sigma_square = sigma_square.to(**devtype)
             z1 = F.conv2d(input_pow2, sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
+
             epsilon = torch.rand(z1.size())
             if torch.cuda.is_available():
                 epsilon = epsilon.to(device='cuda')
@@ -467,22 +434,9 @@ class mySigmConv2d(nn.Module):
 
             m = z0
             v = torch.sqrt(z1)
-            # print("z1: " + str(z1))
-            # print("m: " + str(m))
-            # print("v: " + str(v))
-            # for i, val1 in enumerate(m):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("m(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            # for i, val1 in enumerate(z1):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("z1(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-            # for i, val1 in enumerate(v):
-            #     for j, val2 in enumerate(val1):
-            #         for m, val3 in enumerate(val2):
-            #             print("v(" + str(i) + ", " + str(j) + ", " + str(m) + ": " + str(val3))
-
+            # utils.print_full_tensor(m, "m")
+            # utils.print_full_tensor(z1, "z1")
+            # utils.print_full_tensor(v, "v")
             return m + epsilon * v
 
 def train(args, model, device, train_loader, optimizer, epoch):
@@ -491,7 +445,8 @@ def train(args, model, device, train_loader, optimizer, epoch):
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-        parallel_net = nn.DataParallel(model, device_ids=[0, 1]) # 1, 2, 3])
+        # parallel_net = nn.DataParallel(model, device_ids=[0, 1]) # 1, 2, 3])
+        parallel_net = model
         optimizer.zero_grad()
         output = parallel_net(data)
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \

@@ -62,20 +62,123 @@ class LRNet(nn.Module):
         x = self.bn1(x)
         x = F.max_pool2d(x, 2) # 32 x 12 x 12
         x = F.relu(x)
-        # x = self.dropout1(x) <= was here
         x = self.conv2(x) # 64 x 8 x 8
         x = self.bn2(x)
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
         x = F.relu(x)
         x = torch.flatten(x, 1) # 1024
-        x = self.dropout2(x)
+        x = self.dropout1(x)
         x = self.fc1(x)
         x = F.relu(x)
-        x = self.dropout1(x) # move to here tmp
+        x = self.dropout2(x) # move to here tmp
         x = self.fc2(x)
         output = x
         return output
 
+class FPNet_CIFAR10(nn.Module):
+
+    def __init__(self):
+        super(FPNet_CIFAR10, self).__init__()
+        self.conv1 = nn.Conv2d(3, 128, 3, 1, padding=1)
+        self.conv2 = nn.Conv2d(128, 128, 3, 1, padding=1)
+        self.conv3 = nn.Conv2d(128, 256, 3, 1, padding=1)
+        self.conv4 = nn.Conv2d(256, 256, 3, 1, padding=1)
+        self.conv5 = nn.Conv2d(256, 512, 3, 1, padding=1)
+        self.conv6 = nn.Conv2d(512, 512, 3, 1, padding=1)
+        self.bn1 = nn.BatchNorm2d(128)
+        self.bn2 = nn.BatchNorm2d(128)
+        self.bn3 = nn.BatchNorm2d(256)
+        self.bn4 = nn.BatchNorm2d(256)
+        self.bn5 = nn.BatchNorm2d(512)
+        self.bn6 = nn.BatchNorm2d(512)
+        self.dropout1 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(8192, 1024)
+        self.fc2 = nn.Linear(1024, 10)
+
+    def forward(self, x):
+        x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 3
+        x = self.bn1(x)
+        x = F.relu(x)
+        x = self.conv2(x) # 128 x 32 x 32
+        x = self.bn2(x)
+        x = F.max_pool2d(x, 2) # 128 x 16 x 16
+        x = F.relu(x)
+        x = self.conv3(x)  # 256 x 16 x 16
+        x = self.bn3(x)
+        x = F.relu(x)
+        x = self.conv4(x) # 256 x 16 x 16
+        x = self.bn4(x)
+        x = F.max_pool2d(x, 2) # 256 x 8 x 8
+        x = F.relu(x)
+        x = self.conv5(x)  # 512 x 8 x 8
+        x = self.bn5(x)
+        x = F.relu(x)
+        x = self.conv6(x) # 512 x 8 x 8
+        x = self.bn6(x)
+        x = F.max_pool2d(x, 2) # 512 x 4 x 4 (= 8192)
+        x = F.relu(x)
+        x = torch.flatten(x, 1) # 8192
+        x = self.dropout1(x)
+        x = self.fc1(x)  # 8192 -> 1024
+        x = F.relu(x)
+        x = self.dropout2(x)
+        x = self.fc2(x) # 1024 -> 10
+        output = x
+        return output
+
+
+class LRNet_CIFAR10(nn.Module):
+
+    def __init__(self):
+        super(LRNet_CIFAR10, self).__init__()
+        self.conv1 = mySigmConv2d(3, 128, 3, 1, padding=1)
+        self.conv2 = mySigmConv2d(128, 128, 3, 1, padding=1)
+        self.conv3 = mySigmConv2d(128, 256, 3, 1, padding=1)
+        self.conv4 = mySigmConv2d(256, 256, 3, 1, padding=1)
+        self.conv5 = mySigmConv2d(256, 512, 3, 1, padding=1)
+        self.conv6 = mySigmConv2d(512, 512, 3, 1, padding=1)
+        self.bn1 = nn.BatchNorm2d(128)
+        self.bn2 = nn.BatchNorm2d(128)
+        self.bn3 = nn.BatchNorm2d(256)
+        self.bn4 = nn.BatchNorm2d(256)
+        self.bn5 = nn.BatchNorm2d(512)
+        self.bn6 = nn.BatchNorm2d(512)
+        self.dropout1 = nn.Dropout(0.5)
+        self.dropout2 = nn.Dropout(0.5)
+        self.fc1 = nn.Linear(8192, 1024)
+        self.fc2 = nn.Linear(1024, 10)
+
+    def forward(self, x):
+        x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
+        x = self.bn1(x)
+        x = F.relu(x)
+        x = self.conv2(x)  # 128 x 32 x 32
+        x = self.bn2(x)
+        x = F.max_pool2d(x, 2)  # 128 x 16 x 16
+        x = F.relu(x)
+        x = self.conv3(x)  # 256 x 16 x 16
+        x = self.bn3(x)
+        x = F.relu(x)
+        x = self.conv4(x)  # 256 x 16 x 16
+        x = self.bn4(x)
+        x = F.max_pool2d(x, 2)  # 256 x 8 x 8
+        x = F.relu(x)
+        x = self.conv5(x)  # 512 x 8 x 8
+        x = self.bn5(x)
+        x = F.relu(x)
+        x = self.conv6(x)  # 512 x 8 x 8
+        x = self.bn6(x)
+        x = F.max_pool2d(x, 2)  # 512 x 4 x 4 (= 8192)
+        x = F.relu(x)
+        x = torch.flatten(x, 1)  # 8192
+        x = self.dropout1(x)
+        x = self.fc1(x)  # 8192 -> 1024
+        x = F.relu(x)
+        x = self.dropout2(x)
+        x = self.fc2(x)  # 1024 -> 10
+        output = x
+        return output
 
 class myConv2d(nn.Module):
     def __init__(
@@ -93,26 +196,22 @@ class myConv2d(nn.Module):
         super().__init__()
         self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
         self.test_forward = test_forward
-
         transposed = True
         if transposed:
             D_0, D_1, D_2, D_3 = out_channels, in_channels, kernel_size, kernel_size
-            weight_theta = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, clusters)
         else:
             D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
-            weight_theta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, clusters)
+        weight_theta = torch.Tensor(D_0, D_1, D_2, D_3, clusters)
         test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
         self.test_weight = nn.Parameter(test_weight)
         self.weight_theta = nn.Parameter(test_weight)
-        self.weight_theta = nn.Parameter(weight_theta)  # nn.Parameter is a Tensor that's a module parameter.
+        self.weight_theta = nn.Parameter(weight_theta)
         bias = torch.Tensor(out_channels)
         self.bias = Parameter(bias)
         self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]])
         self.discrete_val.requires_grad = False
-        # self.discrete_square_val = torch.tensor([[1.0, 0.0, 1.0]], dtype=torch.float32)
         self.discrete_square_val = self.discrete_val * self.discrete_val
         self.discrete_square_val.requires_grad = False
-
         if transposed:
             discrete_mat = self.discrete_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size, kernel_size, 1)
             discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size, kernel_size, 1)
@@ -121,12 +220,9 @@ class myConv2d(nn.Module):
             discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size, kernel_size, 1)
         self.discrete_mat = nn.Parameter(discrete_mat)
         self.discrete_square_mat = nn.Parameter(discrete_square_mat)
-
         self.discrete_mat.requires_grad = False
         self.discrete_square_mat.requires_grad = False
-
         self.softmax = torch.nn.Softmax(dim=4)
-
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
@@ -224,6 +320,7 @@ class myConv2d(nn.Module):
             v = torch.sqrt(z1)
             return m + epsilon * v
 
+
 class mySigmConv2d(nn.Module):
 
     def __init__(
@@ -241,58 +338,37 @@ class mySigmConv2d(nn.Module):
         super().__init__()
         self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
         self.test_forward = test_forward
-
         transposed = True
         if transposed:
             D_0, D_1, D_2, D_3 = out_channels, in_channels, kernel_size, kernel_size
-            alpha = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
-            betta = torch.Tensor(out_channels, in_channels, kernel_size, kernel_size, 1)
         else:
             D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
-            alpha = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
-            betta = torch.Tensor(in_channels, out_channels, kernel_size, kernel_size, 1)
-
         test_weight = torch.Tensor(D_0, D_1, D_2, D_3)
+        alpha = torch.Tensor(D_0, D_1, D_2, D_3, 1)
+        betta = torch.Tensor(D_0, D_1, D_2, D_3, 1)
+        bias = torch.Tensor(out_channels)
         self.test_weight = nn.Parameter(test_weight)
-
         self.alpha = nn.Parameter(alpha)
         self.betta = nn.Parameter(betta)
-
-        bias = torch.Tensor(out_channels)
         self.bias = Parameter(bias)
-
         self.discrete_val = torch.tensor([[-1.0, 0.0, 1.0]])
         self.discrete_val.requires_grad = False
         self.discrete_square_val = self.discrete_val * self.discrete_val
         self.discrete_square_val.requires_grad = False
-
-        if transposed:
-            discrete_mat = self.discrete_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size, kernel_size, 1)
-            discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size,
-                                                                               kernel_size, 1)
-        else:
-            discrete_mat = self.discrete_val.unsqueeze(1).repeat(in_channels, out_channels, kernel_size, kernel_size, 1)
-            discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(out_channels, in_channels, kernel_size,
-                                                                               kernel_size, 1)
+        discrete_mat = self.discrete_val.unsqueeze(1).repeat(D_0, D_1, D_2, D_3, 1)
+        discrete_square_mat = self.discrete_square_val.unsqueeze(1).repeat(D_0, D_1, D_2, D_3, 1)
         self.discrete_mat = nn.Parameter(discrete_mat)
         self.discrete_square_mat = nn.Parameter(discrete_square_mat)
-
         self.discrete_mat.requires_grad = False
         self.discrete_square_mat.requires_grad = False
-
-        self.softmax = torch.nn.Softmax(dim=4)
         self.sigmoid = torch.nn.Sigmoid()
-
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
-        # self.reset_train_parameters()
         init.constant_(self.alpha, -0.69314)
         init.constant_(self.betta, 0.0)
         # init.kaiming_uniform_(self.alpha, a=math.sqrt(5))
         # init.kaiming_uniform_(self.betta, a=math.sqrt(5))
-        # init.uniform_(self.weight_theta, -1, 1)
-        # init.constant_(self.weight_theta, 1)
         if self.bias is not None:
             fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.discrete_mat)
             bound = 1 / math.sqrt(fan_in)
