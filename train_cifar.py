@@ -94,29 +94,29 @@ class LRNet_CIFAR10(nn.Module):
     def forward(self, x):
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
         # utils.print_full_tensor(x, "x1")
-        x = self.bn1(x)
+        # x = self.bn1(x)
         # utils.print_full_tensor(x, "x_bn1")
         x = F.relu(x)
         x = self.conv2(x)  # 128 x 32 x 32
         # utils.print_full_tensor(x, "x2")
-        x = self.bn2(x)
+        # x = self.bn2(x)
         # utils.print_full_tensor(x, "x_bn2")
         x = F.max_pool2d(x, 2)  # 128 x 16 x 16
         x = F.relu(x)
         # x = self.dropout1(x)
         x = self.conv3(x)  # 256 x 16 x 16
-        x = self.bn3(x)
+        # x = self.bn3(x)
         x = F.relu(x)
         x = self.conv4(x)  # 256 x 16 x 16
-        x = self.bn4(x)
+        # x = self.bn4(x)
         x = F.max_pool2d(x, 2)  # 256 x 8 x 8
         x = F.relu(x)
         # x = self.dropout2(x)
         x = self.conv5(x)  # 512 x 8 x 8
-        x = self.bn5(x)
+        # x = self.bn5(x)
         x = F.relu(x)
         x = self.conv6(x)  # 512 x 8 x 8
-        x = self.bn6(x)
+        # x = self.bn6(x)
         x = F.max_pool2d(x, 2)  # 512 x 4 x 4 (= 8192)
         x = F.relu(x)
 
@@ -216,7 +216,7 @@ def main():
     if args.load_pre_trained:
         test_model = FPNet_CIFAR10().to(device)
         if use_cuda:
-            test_model.load_state_dict(torch.load('tmp_models/old_cifar10_full_prec.pt'))
+            test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec.pt'))
         else:
             test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec_no_cuda.pt'))
         test_model.eval()
