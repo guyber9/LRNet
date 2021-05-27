@@ -445,7 +445,16 @@ def train(args, model, device, train_loader, optimizer, epoch):
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-        # parallel_net = nn.DataParallel(model, device_ids=[0, 1]) # 1, 2, 3])
+        if args.parallel == 0:
+            parallel_net = model
+        elif args.parallel == 1:
+            parallel_net = nn.DataParallel(model, device_ids=[0])
+        elif args.parallel == 2:
+            parallel_net = nn.DataParallel(model, device_ids=[0, 1])
+        elif args.parallel == 3:
+            parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2])
+        elif args.parallel == 4:
+            parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
         parallel_net = model
         optimizer.zero_grad()
         output = parallel_net(data)
