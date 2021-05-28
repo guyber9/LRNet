@@ -25,6 +25,7 @@ class FPNet(nn.Module):
         self.fc2 = nn.Linear(512, 10)
         self.bn1 = nn.BatchNorm2d(32)
         self.bn2 = nn.BatchNorm2d(64)
+        self.conv2 = nn.DataParallel(self.conv2, device_ids=[0, 1, 2])
 
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
@@ -65,7 +66,7 @@ class LRNet(nn.Module):
         self.bn2 = nn.BatchNorm2d(64)
         # self.conv1.cuda(0)
         # self.conv1.cuda(1)
-        self.conv1 = nn.DataParallel(self.conv1, device_ids=[0, 1, 2])
+        # self.conv1 = nn.DataParallel(self.conv1, device_ids=[0, 1, 2])
 
     def forward(self, x):
         x = self.conv1(x)  # 32 x 24 x 24
