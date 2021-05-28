@@ -636,7 +636,7 @@ class MyNewConv2d(nn.Module):
 
         self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device=self.device))
         self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device=self.device))
-        self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device=self.device))
+        # self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device=self.device))
         self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=torch.float32, device=self.device))
 
         # discrete_prob = np.array([-1.0, 0.0, 1.0])
@@ -656,9 +656,10 @@ class MyNewConv2d(nn.Module):
         # init.uniform_(self.weight_theta, -1, 1)
         # init.constant_(self.weight_theta, 1)
         if self.bias is not None:
-            fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.discrete_mat)
-            bound = 1 / math.sqrt(fan_in)
-            init.uniform_(self.bias, -bound, bound)
+            torch.nn.init.xavier_uniform_(self.bias)
+            # fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.discrete_mat)
+            # bound = 1 / math.sqrt(fan_in)
+            # init.uniform_(self.bias, -bound, bound)
 
     def initialize_weights(self, alpha, betta) -> None:
         print ("Initialize Weights")
