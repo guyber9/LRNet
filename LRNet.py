@@ -677,8 +677,6 @@ class MyNewConv2d(nn.Module):
         discrete_prob = np.tile(discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
         discrete_mat = torch.tensor(discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
 
-        print("self.discrete_mat: " + str(discrete_mat.get_device()))
-        print("prob_mat: " + str(prob_mat.get_device()))
         mean_tmp = prob_mat * discrete_mat
         mean = torch.sum(mean_tmp, dim=4)
         m = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
@@ -686,7 +684,7 @@ class MyNewConv2d(nn.Module):
         # E[x^2]
         # TODO: self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
         square_discrete_prob = np.array([1.0, 0.0, 1.0])
-        square_discrete_prob = np.tile(discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
+        square_discrete_prob = np.tile(square_discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
         discrete_square_mat = torch.tensor(square_discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
 
         mean_square_tmp = prob_mat * discrete_square_mat
