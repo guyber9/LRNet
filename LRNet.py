@@ -671,9 +671,14 @@ class MyNewConv2d(nn.Module):
         prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
         # E[X] calc
         # TODO: self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
-        print("slf.discrete_mat: " + str(self.discrete_mat.get_device()))
+
+        discrete_prob = np.array([-1.0, 0.0, 1.0])
+        discrete_prob = np.tile(discrete_prob, [D_0, D_1, D_2, D_3, 1])
+        discrete_mat = torch.tensor(discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
+
+        print("self.discrete_mat: " + str(discrete_mat.get_device()))
         print("prob_mat: " + str(prob_mat.get_device()))
-        mean_tmp = prob_mat * self.discrete_mat
+        mean_tmp = prob_mat * discrete_mat
         mean = torch.sum(mean_tmp, dim=4)
         m = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
 
