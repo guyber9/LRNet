@@ -128,9 +128,6 @@ def main():
         model.bn2.running_mean = test_model.bn2.running_mean
         model.bn2.running_var = test_model.bn2.running_var
 
-    if args.parallel_gpu:
-        dist.init_process_group(backend='nccl')
-
     print ("###################################")
     print ("training..")
     print ("num of epochs: " + str(args.epochs))

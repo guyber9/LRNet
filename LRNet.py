@@ -462,6 +462,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
         elif args.parallel_gpu == 4:
             parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
         elif args.parallel_gpu == 5:
+            dist.init_process_group(backend='nccl')
             parallel_net = DDP(model, device_ids=[0, 1, 2], output_device=[0])
         # parallel_net = model
 
