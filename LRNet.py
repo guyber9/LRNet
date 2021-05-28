@@ -10,6 +10,7 @@ from torch.nn.modules.conv import _single, _pair, _triple, _reverse_repeat_tuple
 import numpy as np
 from torch.nn.common_types import _size_1_t, _size_2_t, _size_3_t
 import utils as utils
+from torch.nn.parallel import DistributedDataParallel as DDP
 
 class FPNet(nn.Module):
 
@@ -460,7 +461,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
         elif args.parallel_gpu == 4:
             parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
         elif args.parallel_gpu == 5:
-            parallel_net = nn.DistributedDataParallel(model, device_ids=[0, 1, 2], output_device=[0])
+            parallel_net = nn.DDP(model, device_ids=[0, 1, 2], output_device=[0])
         # parallel_net = model
 
         optimizer.zero_grad()
