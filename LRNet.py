@@ -687,7 +687,7 @@ class MyNewConv2d(nn.Module):
         # TODO: self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
         square_discrete_prob = np.array([1.0, 0.0, 1.0])
         square_discrete_prob = np.tile(discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
-        discrete_mat = torch.tensor(square_discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
+        discrete_square_mat = torch.tensor(square_discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
 
         mean_square_tmp = prob_mat * discrete_square_mat
         mean_square = torch.sum(mean_square_tmp, dim=4)
