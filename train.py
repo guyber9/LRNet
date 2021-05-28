@@ -137,7 +137,7 @@ def main():
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
         my.train(args, model, device, train_loader, optimizer, epoch)
-        print('{} seconds'.format(time.time() - t0)
+        print('{} seconds'.format(time.time() - t0))
         my.test(model, device, test_loader, True)
         if ((epoch % 20) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
