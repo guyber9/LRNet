@@ -459,6 +459,8 @@ def train(args, model, device, train_loader, optimizer, epoch):
             parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2])
         elif args.parallel_gpu == 4:
             parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
+        elif args.parallel_gpu == 5:
+            parallel_net = nn.DistributedDataParallel(model, device_ids=[0, 1, 2], output_device=[0])
         # parallel_net = model
 
         optimizer.zero_grad()
