@@ -73,12 +73,18 @@ class LRNet_CIFAR10(nn.Module):
 
     def __init__(self):
         super(LRNet_CIFAR10, self).__init__()
-        self.conv1 = my.mySigmConv2d(3, 128, 3, 1, padding=1)
-        self.conv2 = my.mySigmConv2d(128, 128, 3, 1, padding=1)
-        self.conv3 = my.mySigmConv2d(128, 256, 3, 1, padding=1)
-        self.conv4 = my.mySigmConv2d(256, 256, 3, 1, padding=1)
-        self.conv5 = my.mySigmConv2d(256, 512, 3, 1, padding=1)
-        self.conv6 = my.mySigmConv2d(512, 512, 3, 1, padding=1)
+        # self.conv1 = my.mySigmConv2d(3, 128, 3, 1, padding=1)
+        # self.conv2 = my.mySigmConv2d(128, 128, 3, 1, padding=1)
+        # self.conv3 = my.mySigmConv2d(128, 256, 3, 1, padding=1)
+        # self.conv4 = my.mySigmConv2d(256, 256, 3, 1, padding=1)
+        # self.conv5 = my.mySigmConv2d(256, 512, 3, 1, padding=1)
+        # self.conv6 = my.mySigmConv2d(512, 512, 3, 1, padding=1)
+        self.conv1 = my.MyNewConv2d(3, 128, 3, 1, padding=1)
+        self.conv2 = my.MyNewConv2d(128, 128, 3, 1, padding=1)
+        self.conv3 = my.MyNewConv2d(128, 256, 3, 1, padding=1)
+        self.conv4 = my.MyNewConv2d(256, 256, 3, 1, padding=1)
+        self.conv5 = my.MyNewConv2d(256, 512, 3, 1, padding=1)
+        self.conv6 = my.MyNewConv2d(512, 512, 3, 1, padding=1)
         self.bn1 = nn.BatchNorm2d(128)
         self.bn2 = nn.BatchNorm2d(128)
         self.bn3 = nn.BatchNorm2d(256)
@@ -89,7 +95,6 @@ class LRNet_CIFAR10(nn.Module):
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(8192, 1024)
         self.fc2 = nn.Linear(1024, 10)
-
 
     def forward(self, x):
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32

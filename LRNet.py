@@ -460,6 +460,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
         elif args.parallel_gpu == 4:
             parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
         # parallel_net = model
+
         optimizer.zero_grad()
         output = parallel_net(data)
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
@@ -602,3 +603,92 @@ def find_sigm_weights(w, my_prints=False):
     alpha_prob = np.expand_dims(alpha_prob, axis=-1)
     betta_prob = np.expand_dims(betta_prob, axis=-1)
     return alpha_prob, betta_prob
+
+
+class MyNewConv2d(nn.Module):
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        kernel_size: _size_2_t,
+        stride: _size_2_t = 1,
+        padding: _size_2_t = 0,
+        dilation: _size_2_t = 1,
+        groups: int = 1,
+        clusters: int = 3,
+        transposed: bool = True,
+        test_forward: bool = False,
+    ):
+        super(MyNewConv2d, self).__init__()
+        self.in_channels, self.out_channels, self.kernel_size, self.stride, self.padding, self.dilation, self.groups, self.clusters = in_channels, out_channels, kernel_size, stride, padding, dilation, groups, clusters
+        self.test_forward = test_forward
+        self.transposed = transposed
+        if torch.cuda.is_available():
+            self.device = 'cuda'
+        else:
+            self.device = 'cpu'
+        # transposed = True
+        if self.transposed:
+            D_0, D_1, D_2, D_3 = out_channels, in_channels, kernel_size, kernel_size
+        else:
+            D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
+
+        self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device=self.device))
+        self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device=self.device))
+        self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device=self.device))
+        self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=torch.float32, device=self.device))
+
+        discrete_prob = np.array([-1.0, 0.0, 1.0])
+        prob_mat = np.tile(discrete_prob [D_0, D_1, D_2, D_3, 1])
+        square_prob_mat = prob_mat * prob_mat
+        self.discrete_mat = torch.tensor(prob_mat, requires_grad=False, dtype=torch.float32, device=self.device)
+        self.discrete_square_mat = torch.tensor(square_prob_mat, requires_grad=False, dtype=torch.float32, device=self.device)
+        self.sigmoid = torch.nn.Sigmoid()
+        self.reset_parameters()
+
+    def reset_parameters(self) -> None:
+        # self.reset_train_parameters()
+        init.constant_(self.alpha, -0.69314)
+        init.constant_(self.betta, 0.0)
+        # init.kaiming_uniform_(self.alpha, a=math.sqrt(5))
+        # init.kaiming_uniform_(self.betta, a=math.sqrt(5))
+        # init.uniform_(self.weight_theta, -1, 1)
+        # init.constant_(self.weight_theta, 1)
+        if self.bias is not None:
+            fan_in, _ = nn.init._calculate_fan_in_and_fan_out(self.discrete_mat)
+            bound = 1 / math.sqrt(fan_in)
+            init.uniform_(self.bias, -bound, bound)
+
+    def initialize_weights(self, alpha, betta) -> None:
+        print ("Initialize Weights")
+        self.alpha = nn.Parameter(torch.tensor(alpha, dtype=torch.float32, device=self.device))
+        self.betta = nn.Parameter(torch.tensor(betta, dtype=torch.float32, device=self.device))
+
+    def forward(self, input: Tensor) -> Tensor:
+        prob_alpha = self.sigmoid(self.alpha)
+        prob_betta = self.sigmoid(self.betta) * (1 - prob_alpha)
+        prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
+        # E[X] calc
+        # TODO: self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
+        mean_tmp = prob_mat * self.discrete_mat
+        mean = torch.sum(mean_tmp, dim=4)
+        m = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
+
+        # E[x^2]
+        # TODO: self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
+        mean_square_tmp = prob_mat * self.discrete_square_mat
+        mean_square = torch.sum(mean_square_tmp, dim=4)
+        # E[x] ^ 2
+        mean_pow2 = mean * mean
+        sigma_square = mean_square - mean_pow2
+        if torch.cuda.is_available():
+            torch.backends.cudnn.deterministic = True
+        z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
+        v = torch.sqrt(z1)
+
+        epsilon = torch.rand(z1.size())
+        if torch.cuda.is_available():
+            epsilon = epsilon.to(device='cuda')
+            # epsilon = epsilon.to(z1.get_device())
+        return m + epsilon * v
