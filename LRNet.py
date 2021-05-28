@@ -656,7 +656,7 @@ class MyNewConv2d(nn.Module):
         # init.uniform_(self.weight_theta, -1, 1)
         # init.constant_(self.weight_theta, 1)
         if self.bias is not None:
-            prob_size = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
+            prob_size = torch.cat(((1 - self.alpha - self.betta), self.alpha, self.betta), 4)
             fan_in, _ = nn.init._calculate_fan_in_and_fan_out(prob_size)
             bound = 1 / math.sqrt(fan_in)
             init.uniform_(self.bias, -bound, bound)
