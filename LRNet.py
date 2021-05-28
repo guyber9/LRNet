@@ -11,6 +11,7 @@ import numpy as np
 from torch.nn.common_types import _size_1_t, _size_2_t, _size_3_t
 import utils as utils
 from torch.nn.parallel import DistributedDataParallel as DDP
+import torch.distributed as dist
 
 class FPNet(nn.Module):
 

@@ -6,6 +6,7 @@ from torchvision import datasets, transforms
 from torch.optim.lr_scheduler import StepLR
 import LRNet as my
 import torch.nn as nn
+import torch.distributed as dist
 
 def main():
     # Training settings
@@ -126,6 +127,9 @@ def main():
         model.bn2.weight = test_model.bn2.weight
         model.bn2.running_mean = test_model.bn2.running_mean
         model.bn2.running_var = test_model.bn2.running_var
+
+    if args.parallel_gpu:
+        dist.init_process_group(backend='nccl')
 
     print ("###################################")
     print ("training..")
