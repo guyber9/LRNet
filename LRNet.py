@@ -640,7 +640,7 @@ class MyNewConv2d(nn.Module):
         self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=torch.float32, device=self.device))
 
         discrete_prob = np.array([-1.0, 0.0, 1.0])
-        prob_mat = np.tile(discrete_prob [D_0, D_1, D_2, D_3, 1])
+        prob_mat = np.tile(discrete_prob, [D_0, D_1, D_2, D_3, 1])
         square_prob_mat = prob_mat * prob_mat
         self.discrete_mat = torch.tensor(prob_mat, requires_grad=False, dtype=torch.float32, device=self.device)
         self.discrete_square_mat = torch.tensor(square_prob_mat, requires_grad=False, dtype=torch.float32, device=self.device)
