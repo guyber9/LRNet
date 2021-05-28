@@ -55,7 +55,7 @@ class LRNet(nn.Module):
         # self.conv2 = myConv2d(32, 64, 5, 1)
         # self.conv1 = mySigmConv2d(1, 32, 5, 1)
         # self.conv2 = mySigmConv2d(32, 64, 5, 1)
-        self.conv2 = MyNewConv2d(32, 64, 5, 1)
+        self.conv1 = MyNewConv2d(1, 32, 5, 1)
         self.conv2 = MyNewConv2d(32, 64, 5, 1)
         self.dropout1 = nn.Dropout(0.5)
         self.dropout2 = nn.Dropout(0.5)
