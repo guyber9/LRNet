@@ -673,7 +673,7 @@ class MyNewConv2d(nn.Module):
         # TODO: self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
 
         discrete_prob = np.array([-1.0, 0.0, 1.0])
-        discrete_prob = np.tile(discrete_prob, [D_0, D_1, D_2, D_3, 1])
+        discrete_prob = np.tile(discrete_prob, prob_mat.size())
         discrete_mat = torch.tensor(discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
 
         print("self.discrete_mat: " + str(discrete_mat.get_device()))
