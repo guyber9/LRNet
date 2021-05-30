@@ -131,6 +131,9 @@ def main():
         model.bn2.running_mean = test_model.bn2.running_mean
         model.bn2.running_var = test_model.bn2.running_var
 
+    if torch.cuda.is_available():
+        torch.backends.cudnn.deterministic = True
+
     print ("###################################")
     print ("training..")
     print ("num of epochs: " + str(args.epochs))
