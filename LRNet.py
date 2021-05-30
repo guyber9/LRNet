@@ -643,7 +643,7 @@ class MyNewConv2d(nn.Module):
         else:
             D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
 
-        self.tensoe_dtype = torch.float16
+        self.tensoe_dtype = torch.float32
 
         self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=self.tensoe_dtype, device=self.device))
         self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=self.tensoe_dtype, device=self.device))
