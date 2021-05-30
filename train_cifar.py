@@ -260,8 +260,8 @@ def main():
     scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
-        with torch.cuda.amp.autocast():
-            my.train(args, model, device, train_loader, optimizer, epoch)
+        # with torch.cuda.amp.autocast():
+        my.train(args, model, device, train_loader, optimizer, epoch)
         print('{} seconds'.format(time.time() - t0))
         my.test(model, device, test_loader, True)
         if ((epoch % 30) == 0) or (epoch == args.epochs):
