@@ -648,7 +648,7 @@ class MyNewConv2d(nn.Module):
         self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=self.tensoe_dtype, device=self.device))
         self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=self.tensoe_dtype, device=self.device))
         # self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device=self.device))
-        self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=tensoe_dtype, device=self.device))
+        self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=self.tensoe_dtype, device=self.device))
 
         # discrete_prob = np.array([-1.0, 0.0, 1.0])
         # prob_mat = np.tile(discrete_prob, [D_0, D_1, D_2, D_3, 1])
