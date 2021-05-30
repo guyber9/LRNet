@@ -706,8 +706,10 @@ class MyNewConv2d(nn.Module):
         z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
         v = torch.sqrt(z1)
 
-        epsilon = torch.rand(z1.size())
-        if torch.cuda.is_available():
-            epsilon = epsilon.to(device='cuda')
-            # epsilon = epsilon.to(z1.get_device())
+        epsilon = torch.rand(z1.size(), requires_grad=False, dtype=torch.float32, device='cuda')
+
+        # epsilon = torch.rand(z1.size())
+        # if torch.cuda.is_available():
+        #     epsilon = epsilon.to(device='cuda')
+        #     # epsilon = epsilon.to(z1.get_device())
         return m + epsilon * v
