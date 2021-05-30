@@ -138,6 +138,8 @@ def main():
     scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
+        if torch.cuda.is_available():
+            torch.backends.cudnn.benchmark = True
         my.train(args, model, device, train_loader, optimizer, epoch)
         print('{} seconds'.format(time.time() - t0))
         my.test(model, device, test_loader, True)
