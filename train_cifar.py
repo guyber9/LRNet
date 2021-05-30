@@ -8,6 +8,7 @@ import LRNet as my
 from torch.nn import functional as F
 import torch.nn as nn
 import utils as utils
+import time
 
 class FPNet_CIFAR10(nn.Module):
 
@@ -258,7 +259,9 @@ def main():
     print ("###################################")
     scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
     for epoch in range(1, args.epochs + 1):
+        t0 = time.time()
         my.train(args, model, device, train_loader, optimizer, epoch)
+        print('{} seconds'.format(time.time() - t0))
         my.test(model, device, test_loader, True)
         if ((epoch % 30) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
