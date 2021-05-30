@@ -44,6 +44,8 @@ def main():
                         help='cifar10 flag')
     parser.add_argument('--parallel-gpu', type=int, default=1, metavar='N',
                         help='parallel-gpu (default: 1)')
+    parser.add_argument('--num-workers', type=int, default=1, metavar='N',
+                        help='num_workers (default: 1)')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -55,7 +57,7 @@ def main():
     train_kwargs = {'batch_size': args.batch_size}
     test_kwargs = {'batch_size': args.test_batch_size}
     if use_cuda:
-        cuda_kwargs = {'num_workers': 1,
+        cuda_kwargs = {'num_workers': args.num_workers,
                        'pin_memory': True,
                        'shuffle': True}
         train_kwargs.update(cuda_kwargs)
