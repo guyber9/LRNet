@@ -701,8 +701,11 @@ class MyNewConv2d(nn.Module):
         # E[x] ^ 2
         mean_pow2 = mean * mean
         sigma_square = mean_square - mean_pow2
-
+        if torch.cuda.is_available():
+            torch.backends.cudnn.deterministic = True
         z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
+        if torch.cuda.is_available():
+            torch.backends.cudnn.deterministic = False
         v = torch.sqrt(z1)
 
         epsilon = torch.rand(z1.size(), requires_grad=False, dtype=torch.float32, device='cuda')
