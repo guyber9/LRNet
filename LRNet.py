@@ -643,10 +643,12 @@ class MyNewConv2d(nn.Module):
         else:
             D_0, D_1, D_2, D_3 = in_channels, out_channels, kernel_size, kernel_size
 
-        self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device=self.device))
-        self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=torch.float32, device=self.device))
+        self.tensoe_dtype = torch.float16
+
+        self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=self.tensoe_dtype, device=self.device))
+        self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=self.tensoe_dtype, device=self.device))
         # self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device=self.device))
-        self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=torch.float32, device=self.device))
+        self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=tensoe_dtype, device=self.device))
 
         # discrete_prob = np.array([-1.0, 0.0, 1.0])
         # prob_mat = np.tile(discrete_prob, [D_0, D_1, D_2, D_3, 1])
@@ -672,8 +674,8 @@ class MyNewConv2d(nn.Module):
 
     def initialize_weights(self, alpha, betta) -> None:
         print ("Initialize Weights")
-        self.alpha = nn.Parameter(torch.tensor(alpha, dtype=torch.float32, device=self.device))
-        self.betta = nn.Parameter(torch.tensor(betta, dtype=torch.float32, device=self.device))
+        self.alpha = nn.Parameter(torch.tensor(alpha, dtype=self.tensoe_dtype, device=self.device))
+        self.betta = nn.Parameter(torch.tensor(betta, dtype=self.tensoe_dtype, device=self.device))
 
     def forward(self, input: Tensor) -> Tensor:
         prob_alpha = self.sigmoid(self.alpha)
@@ -684,7 +686,8 @@ class MyNewConv2d(nn.Module):
 
         discrete_prob = np.array([-1.0, 0.0, 1.0])
         discrete_prob = np.tile(discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
-        discrete_mat = torch.tensor(discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
+        # discrete_mat = torch.tensor(discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
+        discrete_mat = torch.as_tensor(discrete_prob, requires_grad=False, dtype=self.tensoe_dtype, device='cuda')
 
         mean_tmp = prob_mat * discrete_mat
         mean = torch.sum(mean_tmp, dim=4)
@@ -694,7 +697,8 @@ class MyNewConv2d(nn.Module):
         # TODO: self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
         square_discrete_prob = np.array([1.0, 0.0, 1.0])
         square_discrete_prob = np.tile(square_discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
-        discrete_square_mat = torch.tensor(square_discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
+        # discrete_square_mat = torch.tensor(square_discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
+        discrete_square_mat = torch.as_tensor(square_discrete_prob, requires_grad=False, dtype=self.tensoe_dtype, device='cuda')
 
         mean_square_tmp = prob_mat * discrete_square_mat
         mean_square = torch.sum(mean_square_tmp, dim=4)
@@ -708,7 +712,7 @@ class MyNewConv2d(nn.Module):
             torch.backends.cudnn.deterministic = False
         v = torch.sqrt(z1)
 
-        epsilon = torch.rand(z1.size(), requires_grad=False, dtype=torch.float32, device='cuda')
+        epsilon = torch.rand(z1.size(), requires_grad=False, dtype=self.tensoe_dtype, device='cuda')
 
         # epsilon = torch.rand(z1.size())
         # if torch.cuda.is_available():
