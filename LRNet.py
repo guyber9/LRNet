@@ -451,7 +451,7 @@ class mySigmConv2d(nn.Module):
 
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
-    weight_decay = 1e-4
+    weight_decay = 1e-5
     probability_decay = 1e-11
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
