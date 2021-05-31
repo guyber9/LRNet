@@ -647,7 +647,7 @@ class MyNewConv2d(nn.Module):
 
         self.alpha = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=self.tensoe_dtype, device=self.device))
         self.betta = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3, 1], dtype=self.tensoe_dtype, device=self.device))
-        # self.test_weight = torch.nn.Parameter(torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device=self.device))
+        self.test_weight = torch.empty([D_0, D_1, D_2, D_3], dtype=torch.float32, device=self.device)
         self.bias = torch.nn.Parameter(torch.empty([out_channels], dtype=self.tensoe_dtype, device=self.device))
 
         # discrete_prob = np.array([-1.0, 0.0, 1.0])
@@ -676,6 +676,34 @@ class MyNewConv2d(nn.Module):
         print ("Initialize Weights")
         self.alpha = nn.Parameter(torch.tensor(alpha, dtype=self.tensoe_dtype, device=self.device))
         self.betta = nn.Parameter(torch.tensor(betta, dtype=self.tensoe_dtype, device=self.device))
+
+    def test_mode_switch(self) -> None:
+        print ("test_mode_switch")
+        self.test_forward = True;
+        print("Initializing Test Weights: \n")
+        sigmoid_func = torch.nn.Sigmoid()
+        alpha_prob = sigmoid_func(self.alpha)
+        betta_prob = sigmoid_func(self.betta)  * (1 - alpha_prob)
+        prob_mat = torch.cat(((1 - alpha_prob - betta_prob), alpha_prob, betta_prob), 4)
+
+        prob_mat = prob_mat.detach().cpu().clone().numpy()
+
+        my_array = []
+        for i, val_0 in enumerate(prob_mat):
+            my_array_0 = []
+            for j, val_1 in enumerate(val_0):
+                my_array_1 = []
+                for m, val_2 in enumerate(val_1):
+                    my_array_2 = []
+                    for n, val_3 in enumerate(val_2):
+                        theta = val_3
+                        values_arr = np.random.default_rng().multinomial(10, val_3)
+                        values = np.nanargmax(values_arr) - 1
+                        my_array_2.append(values)
+                    my_array_1.append(my_array_2)
+                my_array_0.append(my_array_1)
+            my_array.append(my_array_0)
+        test_weight = torch.tensor(my_array, dtype=torch.float32, device=self.device)
 
     def forward(self, input: Tensor) -> Tensor:
         prob_alpha = self.sigmoid(self.alpha)
