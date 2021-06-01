@@ -28,7 +28,7 @@ def test():
     train_kwargs = {'batch_size': args.batch_size}
     test_kwargs = {'batch_size': args.test_batch_size}
     if use_cuda:
-        cuda_kwargs = {'num_workers': 1,
+        cuda_kwargs = {'num_workers': 4,
                        'pin_memory': True,
                        'shuffle': True}
         train_kwargs.update(cuda_kwargs)
@@ -76,8 +76,8 @@ def test():
     print ("###################################")
     print ("test Data Set")
     my.test(model, device, test_loader, True)
-    # print ("train Data Set")
-    # my.test(model, device, train_loader, False)
+    print ("train Data Set")
+    my.test(model, device, train_loader, False)
 
 if __name__ == '__main__':
     test()
