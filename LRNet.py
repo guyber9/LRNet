@@ -703,7 +703,7 @@ class MyNewConv2d(nn.Module):
                     my_array_1.append(my_array_2)
                 my_array_0.append(my_array_1)
             my_array.append(my_array_0)
-        test_weight = torch.tensor(my_array, dtype=torch.float32, device=self.device)
+        test_weight = torch.tensor(my_array, dtype=self.tensoe_dtype, device=self.device)
 
     def forward(self, input: Tensor) -> Tensor:
         if self.test_forward:
