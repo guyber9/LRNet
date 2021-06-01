@@ -697,15 +697,15 @@ class MyNewConv2d(nn.Module):
                     my_array_2 = []
                     for n, val_3 in enumerate(val_2):
                         # theta = val_3
-                        values_arr = np.random.default_rng().multinomial(10, val_3)
+                        values_arr = np.random.default_rng().multinomial(1, val_3)
                         values = np.nanargmax(values_arr) - 1
-                        print ("val_3: " + str(val_3))
-                        print ("values: " + str(values))
+                        # print ("val_3: " + str(val_3))
+                        # print ("values: " + str(values))
                         my_array_2.append(values)
                     my_array_1.append(my_array_2)
                 my_array_0.append(my_array_1)
             my_array.append(my_array_0)
-        test_weight = torch.tensor(my_array, dtype=self.tensoe_dtype, device=self.device)
+        self.test_weight = torch.tensor(my_array, dtype=self.tensoe_dtype, device=self.device)
 
     def forward(self, input: Tensor) -> Tensor:
         if self.test_forward:
