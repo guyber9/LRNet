@@ -96,8 +96,10 @@ class LRNet_CIFAR10(nn.Module):
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(8192, 1024)
         self.fc2 = nn.Linear(1024, 10)
-        # self.dropout3 = nn.Dropout(0.5)
-        # self.dropout4 = nn.Dropout(0.5)
+        self.dropout3 = nn.Dropout(0.2)
+        self.dropout4 = nn.Dropout(0.2)
+        self.dropout5 = nn.Dropout(0.2)
+        self.dropout6 = nn.Dropout(0.2)
 
     def forward(self, x):
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
@@ -105,22 +107,24 @@ class LRNet_CIFAR10(nn.Module):
         x = self.bn1(x)
         # utils.print_full_tensor(x, "x_bn1")
         x = F.relu(x)
+        x = self.dropout6(x)
         x = self.conv2(x)  # 128 x 32 x 32
         # utils.print_full_tensor(x, "x2")
         x = self.bn2(x)
         # utils.print_full_tensor(x, "x_bn2")
         x = F.max_pool2d(x, 2)  # 128 x 16 x 16
         x = F.relu(x)
-        # x = self.dropout3(x)
+        x = self.dropout3(x)
 
         x = self.conv3(x)  # 256 x 16 x 16
         x = self.bn3(x)
         x = F.relu(x)
+        x = self.dropout5(x)
         x = self.conv4(x)  # 256 x 16 x 16
         x = self.bn4(x)
         x = F.max_pool2d(x, 2)  # 256 x 8 x 8
         x = F.relu(x)
-        # x = self.dropout4(x)
+        x = self.dropout4(x)
 
         x = self.conv5(x)  # 512 x 8 x 8
         x = self.bn5(x)
