@@ -706,44 +706,47 @@ class MyNewConv2d(nn.Module):
         test_weight = torch.tensor(my_array, dtype=torch.float32, device=self.device)
 
     def forward(self, input: Tensor) -> Tensor:
-        prob_alpha = self.sigmoid(self.alpha)
-        prob_betta = self.sigmoid(self.betta) * (1 - prob_alpha)
-        prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
-        # E[X] calc
-        # TODO: self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
+        if self.test_forward:
+            return F.conv2d(input, self.test_weight, self.bias, self.stride, self.padding, self.dilation, self.groups)
+        else:
+            prob_alpha = self.sigmoid(self.alpha)
+            prob_betta = self.sigmoid(self.betta) * (1 - prob_alpha)
+            prob_mat = torch.cat(((1 - prob_alpha - prob_betta), prob_alpha, prob_betta), 4)
+            # E[X] calc
+            # TODO: self.discrete_mat = self.discrete_mat.to(prob_mat.get_device())
 
-        discrete_prob = np.array([-1.0, 0.0, 1.0])
-        discrete_prob = np.tile(discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
-        # discrete_mat = torch.tensor(discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
-        discrete_mat = torch.as_tensor(discrete_prob, dtype=self.tensoe_dtype, device='cuda')
+            discrete_prob = np.array([-1.0, 0.0, 1.0])
+            discrete_prob = np.tile(discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
+            # discrete_mat = torch.tensor(discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
+            discrete_mat = torch.as_tensor(discrete_prob, dtype=self.tensoe_dtype, device='cuda')
 
-        mean_tmp = prob_mat * discrete_mat
-        mean = torch.sum(mean_tmp, dim=4)
-        m = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
+            mean_tmp = prob_mat * discrete_mat
+            mean = torch.sum(mean_tmp, dim=4)
+            m = F.conv2d(input, mean, self.bias, self.stride, self.padding, self.dilation, self.groups)
 
-        # E[x^2]
-        # TODO: self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
-        square_discrete_prob = np.array([1.0, 0.0, 1.0])
-        square_discrete_prob = np.tile(square_discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
-        # discrete_square_mat = torch.tensor(square_discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
-        discrete_square_mat = torch.as_tensor(square_discrete_prob, dtype=self.tensoe_dtype, device='cuda')
+            # E[x^2]
+            # TODO: self.discrete_square_mat = self.discrete_square_mat.to(prob_mat.get_device())
+            square_discrete_prob = np.array([1.0, 0.0, 1.0])
+            square_discrete_prob = np.tile(square_discrete_prob, [self.out_channels, self.in_channels, self.kernel_size, self.kernel_size, 1])
+            # discrete_square_mat = torch.tensor(square_discrete_prob, requires_grad=False, dtype=torch.float32, device='cuda')
+            discrete_square_mat = torch.as_tensor(square_discrete_prob, dtype=self.tensoe_dtype, device='cuda')
 
-        mean_square_tmp = prob_mat * discrete_square_mat
-        mean_square = torch.sum(mean_square_tmp, dim=4)
-        # E[x] ^ 2
-        mean_pow2 = mean * mean
-        sigma_square = mean_square - mean_pow2
-        if torch.cuda.is_available():
-            torch.backends.cudnn.deterministic = True
-        z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
-        if torch.cuda.is_available():
-            torch.backends.cudnn.deterministic = False
-        v = torch.sqrt(z1)
+            mean_square_tmp = prob_mat * discrete_square_mat
+            mean_square = torch.sum(mean_square_tmp, dim=4)
+            # E[x] ^ 2
+            mean_pow2 = mean * mean
+            sigma_square = mean_square - mean_pow2
+            if torch.cuda.is_available():
+                torch.backends.cudnn.deterministic = True
+            z1 = F.conv2d((input * input), sigma_square, None, self.stride, self.padding, self.dilation, self.groups)
+            if torch.cuda.is_available():
+                torch.backends.cudnn.deterministic = False
+            v = torch.sqrt(z1)
 
-        epsilon = torch.rand(z1.size(), requires_grad=False, dtype=self.tensoe_dtype, device='cuda')
+            epsilon = torch.rand(z1.size(), requires_grad=False, dtype=self.tensoe_dtype, device='cuda')
 
-        # epsilon = torch.rand(z1.size())
-        # if torch.cuda.is_available():
-        #     epsilon = epsilon.to(device='cuda')
-        #     # epsilon = epsilon.to(z1.get_device())
-        return m + epsilon * v
+            # epsilon = torch.rand(z1.size())
+            # if torch.cuda.is_available():
+            #     epsilon = epsilon.to(device='cuda')
+            #     # epsilon = epsilon.to(z1.get_device())
+            return m + epsilon * v
