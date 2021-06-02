@@ -228,8 +228,20 @@ def main():
     else:
         print ("Training LRNet")
         model = LRNet_CIFAR10().to(device)
-        optimizer = optim.Adam(model.parameters(), lr=args.lr)
+        # optimizer = optim.Adam(model.parameters(), lr=args.lr)
+        optimizer = optim.Adam([
+            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
+            {'params': model.fc1.parameters(), 'weight_decay': 1e-4},
+            {'params': model.fc1.parameters(), 'weight_decay': 1e-4}
+        ], lr=args.lr)
+
         # optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
+
 
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
@@ -263,15 +275,15 @@ def main():
         model.fc2.weight = test_model.fc2.weight
         model.fc2.bias = test_model.fc2.bias
 
-        model.bn1.bias = test_model.bn1.bias
-        model.bn1.weight = test_model.bn1.weight
-        model.bn1.running_mean = test_model.bn1.running_mean
-        model.bn1.running_var = test_model.bn1.running_var
-
-        model.bn2.bias = test_model.bn2.bias
-        model.bn2.weight = test_model.bn2.weight
-        model.bn2.running_mean = test_model.bn2.running_mean
-        model.bn2.running_var = test_model.bn2.running_var
+        # model.bn1.bias = test_model.bn1.bias
+        # model.bn1.weight = test_model.bn1.weight
+        # model.bn1.running_mean = test_model.bn1.running_mean
+        # model.bn1.running_var = test_model.bn1.running_var
+        #
+        # model.bn2.bias = test_model.bn2.bias
+        # model.bn2.weight = test_model.bn2.weight
+        # model.bn2.running_mean = test_model.bn2.running_mean
+        # model.bn2.running_var = test_model.bn2.running_var
 
     if args.resume:
         print("Resume Model: LRNet")
