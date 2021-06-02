@@ -231,11 +231,11 @@ def main():
         # optimizer = optim.Adam(model.parameters(), lr=args.lr)
         optimizer = optim.Adam([
             {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
-            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
-            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
-            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
-            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
-            {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv2.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv3.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv4.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv5.parameters(), 'weight_decay': 1e-11},
+            {'params': model.conv6.parameters(), 'weight_decay': 1e-11},
             {'params': model.fc1.parameters(), 'weight_decay': 1e-4},
             {'params': model.fc1.parameters(), 'weight_decay': 1e-4}
         ], lr=args.lr)
