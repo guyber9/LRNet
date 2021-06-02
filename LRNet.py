@@ -453,6 +453,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
     weight_decay = 1e-4
     probability_decay = 1e-11
+    cudnn.benchmark = True
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
         if args.parallel_gpu == 0:
