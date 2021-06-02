@@ -222,7 +222,9 @@ def main():
     if args.full_prec:
         print ("Training FPNet_CIFAR10")
         model = FPNet_CIFAR10().to(device)
-        optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
+        # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
+        optimizer = optim.SGD(model.parameters(), lr=args.lr,
+                              momentum=0.9, weight_decay=5e-4)
     else:
         print ("Training LRNet")
         model = LRNet_CIFAR10().to(device)
@@ -278,7 +280,11 @@ def main():
     print ("training..")
     print ("num of epochs: " + str(args.epochs))
     print ("###################################")
-    scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+    if args.full_prec:
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+    else:
+        scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
         # with torch.cuda.amp.autocast():

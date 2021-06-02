@@ -510,9 +510,9 @@ def train(args, model, device, train_loader, optimizer, epoch):
 
 def test(model, device, test_loader, test_mode):
     if test_mode:
-        print ("evaluating with Test Model Parameters")
+        tstring = 'Test'
     else:
-        print ("evaluating with Train Model Parameters")
+        tstring = 'Train'
     model.eval()
     test_loss = 0
     correct = 0
@@ -527,7 +527,7 @@ def test(model, device, test_loader, test_mode):
 
     test_loss /= len(test_loader.dataset)
 
-    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+    print('\n' + str(tstring) +' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
     return (100. * correct / len(test_loader.dataset))
