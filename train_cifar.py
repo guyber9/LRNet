@@ -228,7 +228,9 @@ def main():
     else:
         print ("Training LRNet")
         model = LRNet_CIFAR10().to(device)
-        optimizer = optim.Adam(model.parameters(), lr=args.lr)
+        # optimizer = optim.Adam(model.parameters(), lr=args.lr)
+        optimizer = optim.SGD(model.parameters(), lr=args.lr,
+                              momentum=0.9, weight_decay=5e-4)
 
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
@@ -283,7 +285,8 @@ def main():
     if args.full_prec:
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
     else:
-        scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+        # scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
