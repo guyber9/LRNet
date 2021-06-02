@@ -237,7 +237,7 @@ def main():
             {'params': model.conv5.parameters(), 'weight_decay': 1e-11},
             {'params': model.conv6.parameters(), 'weight_decay': 1e-11},
             {'params': model.fc1.parameters(), 'weight_decay': 1e-4},
-            {'params': model.fc1.parameters(), 'weight_decay': 1e-4}
+            {'params': model.fc2.parameters(), 'weight_decay': 1e-4}
         ], lr=args.lr)
 
         # optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
