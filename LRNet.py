@@ -471,8 +471,9 @@ def train(args, model, device, train_loader, optimizer, epoch):
             parallel_net = DDP(model, device_ids=[0, 1, 2], output_device=[0])
         # parallel_net = model
 
-        optimizer.zero_grad()
+        # optimizer.zero_grad()
         output = parallel_net(data)
+
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
         #             + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
 
@@ -496,6 +497,8 @@ def train(args, model, device, train_loader, optimizer, epoch):
                                                                + torch.norm(model.conv1.betta, 2)
                                                                + torch.norm(model.conv2.alpha, 2)
                                                                + torch.norm(model.conv2.betta, 2)) + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
+
+        optimizer.zero_grad()
 
         if args.debug_mode:
             torch.autograd.set_detect_anomaly(True)
@@ -701,6 +704,11 @@ class MyNewConv2d(nn.Module):
                         # theta = val_3
                         values_arr = np.random.default_rng().multinomial(100, val_3)
                         values = np.nanargmax(values_arr) - 1
+                        if (i == 0) and (j == 0) and (m == 0) and (n == 0):
+                            print ("val3: " + str(val_3))
+                            print ("values_arr: " + str(values_arr))
+                            print ("values: " + str(values))
+
                         # print ("val_3: " + str(val_3))
                         # print ("values: " + str(values))
                         my_array_2.append(values)
