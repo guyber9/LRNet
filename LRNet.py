@@ -702,7 +702,7 @@ class MyNewConv2d(nn.Module):
                     my_array_2 = []
                     for n, val_3 in enumerate(val_2):
                         # theta = val_3
-                        values_arr = np.random.default_rng().multinomial(1, val_3)
+                        values_arr = np.random.default_rng().multinomial(10, val_3)
                         values = np.nanargmax(values_arr) - 1
                         # print ("val_3: " + str(val_3))
                         # print ("values: " + str(values))
