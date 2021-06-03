@@ -296,8 +296,8 @@ def main():
     if args.full_prec:
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
     else:
-        scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
-        # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+        # scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
