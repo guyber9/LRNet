@@ -704,10 +704,10 @@ class MyNewConv2d(nn.Module):
                         # theta = val_3
                         values_arr = np.random.default_rng().multinomial(100, val_3)
                         values = np.nanargmax(values_arr) - 1
-                        if (i == 0) and (j == 0) and (m == 0) and (n == 0):
-                            print ("val3: " + str(val_3))
-                            print ("values_arr: " + str(values_arr))
-                            print ("values: " + str(values))
+                        # if (i == 0) and (j == 0) and (m == 0) and (n == 0):
+                        #     print ("val3: " + str(val_3))
+                        #     print ("values_arr: " + str(values_arr))
+                        #     print ("values: " + str(values))
 
                         # print ("val_3: " + str(val_3))
                         # print ("values: " + str(values))
@@ -715,6 +715,7 @@ class MyNewConv2d(nn.Module):
                     my_array_1.append(my_array_2)
                 my_array_0.append(my_array_1)
             my_array.append(my_array_0)
+        utils.print_full_tensor(my_array, "weights")
         self.test_weight = torch.tensor(my_array, dtype=self.tensoe_dtype, device=self.device)
 
     def forward(self, input: Tensor) -> Tensor:
