@@ -704,7 +704,7 @@ class MyNewConv2d(nn.Module):
                         # theta = val_3
                         values_arr = np.random.default_rng().multinomial(100, val_3)
                         values = np.nanargmax(values_arr) - 1
-                        if (i == 0) and (j == 0) and (m == 0):
+                        if (i == 1) and (j == 0) and (m == 2):
                             print ("val3: " + str(val_3))
                             print ("values_arr: " + str(values_arr))
                             print ("values: " + str(values))
