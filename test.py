@@ -56,6 +56,7 @@ def test():
     my.test(model, device, train_loader, True)
 
     for idx in range(1,2+1):
+        print ("start " + str(idx))
         model.conv1.test_mode_switch()
         model.conv2.test_mode_switch()
         accu = my.test(model, device, test_loader, True)
