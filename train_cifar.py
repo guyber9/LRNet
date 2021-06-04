@@ -268,22 +268,22 @@ def main():
         model.conv5.initialize_weights(alpha5, betta5)
         model.conv6.initialize_weights(alpha6, betta6)
 
-        model.conv1.bias = test_model.conv1.bias
-        model.conv2.bias = test_model.conv2.bias
-        model.fc1.weight = test_model.fc1.weight
-        model.fc1.bias = test_model.fc1.bias
-        model.fc2.weight = test_model.fc2.weight
-        model.fc2.bias = test_model.fc2.bias
-
-        model.bn1.bias = test_model.bn1.bias
-        model.bn1.weight = test_model.bn1.weight
-        model.bn1.running_mean = test_model.bn1.running_mean
-        model.bn1.running_var = test_model.bn1.running_var
-
-        model.bn2.bias = test_model.bn2.bias
-        model.bn2.weight = test_model.bn2.weight
-        model.bn2.running_mean = test_model.bn2.running_mean
-        model.bn2.running_var = test_model.bn2.running_var
+        # model.conv1.bias = test_model.conv1.bias
+        # model.conv2.bias = test_model.conv2.bias
+        # model.fc1.weight = test_model.fc1.weight
+        # model.fc1.bias = test_model.fc1.bias
+        # model.fc2.weight = test_model.fc2.weight
+        # model.fc2.bias = test_model.fc2.bias
+        #
+        # # model.bn1.bias = test_model.bn1.bias
+        # # model.bn1.weight = test_model.bn1.weight
+        # # model.bn1.running_mean = test_model.bn1.running_mean
+        # # model.bn1.running_var = test_model.bn1.running_var
+        # #
+        # # model.bn2.bias = test_model.bn2.bias
+        # # model.bn2.weight = test_model.bn2.weight
+        # # model.bn2.running_mean = test_model.bn2.running_mean
+        # # model.bn2.running_var = test_model.bn2.running_var
 
     if args.resume:
         print("Resume Model: LRNet")
