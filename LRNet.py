@@ -452,7 +452,7 @@ class mySigmConv2d(nn.Module):
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
     weight_decay = 1e-1
-    probability_decay = 1e-11
+    probability_decay = 1e-7
     # torch.backends.cudnn.benchmark = True
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
