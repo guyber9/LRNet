@@ -228,7 +228,9 @@ def main():
     else:
         print ("Training LRNet")
         model = LRNet_CIFAR10().to(device)
-        optimizer = optim.Adam(model.parameters(), lr=args.lr)
+        optimizer = optim.SGD(model.parameters(), lr=args.lr,
+                              momentum=0.9, weight_decay=5e-4)
+        # optimizer = optim.Adam(model.parameters(), lr=args.lr)
         # optimizer = optim.Adam([
         #     {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
         #     {'params': model.conv2.parameters(), 'weight_decay': 1e-11},
