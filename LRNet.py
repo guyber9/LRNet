@@ -81,10 +81,10 @@ class LRNet(nn.Module):
         x = F.max_pool2d(x, 2) # 64 x 4 x 4
         x = F.relu(x)
         x = torch.flatten(x, 1) # 1024
-        x = self.dropout2(x)
+        x = self.dropout1(x)
         x = self.fc1(x)
         x = F.relu(x)
-        x = self.dropout1(x) # move to here tmp
+        x = self.dropout2(x)
         x = self.fc2(x)
         output = x
         # print("output" + str(output))
@@ -451,8 +451,8 @@ class mySigmConv2d(nn.Module):
 
 def train(args, model, device, train_loader, optimizer, epoch):
     model.train()
-    weight_decay = 1e-4
-    probability_decay = 1e-11
+    weight_decay = 1e-2
+    probability_decay = 1e-7
     # torch.backends.cudnn.benchmark = True
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
