@@ -479,6 +479,7 @@ def train(args, model, device, train_loader, optimizer, epoch):
 
         if args.cifar10:
             if args.full_prec:
+                ce_loss = 0
                 loss = F.cross_entropy(output, target)
             else:
                 # loss = F.cross_entropy(output, target)
