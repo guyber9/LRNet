@@ -180,7 +180,7 @@ def main():
                         help='parallel-gpu (default: 1)')
     parser.add_argument('--num-workers', type=int, default=1, metavar='N',
                         help='num_workers (default: 1)')
-    parser.add_argument('--save', action='store', default='"tmp_models/cifar10',
+    parser.add_argument('--save', action='store', default='tmp_models/cifar10',
                         help='name of saved model')
 
     args = parser.parse_args()
