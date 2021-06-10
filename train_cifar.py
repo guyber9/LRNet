@@ -180,7 +180,7 @@ def main():
                         help='parallel-gpu (default: 1)')
     parser.add_argument('--num-workers', type=int, default=1, metavar='N',
                         help='num_workers (default: 1)')
-    parser.add_argument('--save', action='store', default='cifar10',
+    parser.add_argument('--save', action='store', default='"tmp_models/cifar10',
                         help='name of saved model')
 
     args = parser.parse_args()
@@ -320,11 +320,11 @@ def main():
 
     if args.full_prec:
         if use_cuda:
-            torch.save(model.state_dict(), "tmp_models/" + str(args.save) + "_full_prec.pt")
+            torch.save(model.state_dict(), str(args.save) + "_full_prec.pt")
         else:
-            torch.save(model.state_dict(), "tmp_models/" + str(args.save) + "_full_prec_no_cuda.pt")
+            torch.save(model.state_dict(), str(args.save) + "_full_prec_no_cuda.pt")
     else:
-        torch.save(model.state_dict(), "tmp_models/" + str(args.save) + "_cnn.pt")
+        torch.save(model.state_dict(), str(args.save) + "_cnn.pt")
 
 if __name__ == '__main__':
     main()
