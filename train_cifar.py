@@ -180,6 +180,8 @@ def main():
                         help='parallel-gpu (default: 1)')
     parser.add_argument('--num-workers', type=int, default=1, metavar='N',
                         help='num_workers (default: 1)')
+    parser.add_argument('--save', action='store', default='cifar10',
+                        help='name of saved model')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -224,7 +226,7 @@ def main():
         model = FPNet_CIFAR10().to(device)
         # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
         optimizer = optim.SGD(model.parameters(), lr=args.lr,
-                              momentum=0.9, weight_decay=1e-4)
+                              momentum=0.9, weight_decay=1e-2)
     else:
         print ("Training LRNet")
         model = LRNet_CIFAR10().to(device)
@@ -318,11 +320,11 @@ def main():
 
     if args.full_prec:
         if use_cuda:
-            torch.save(model.state_dict(), "tmp_models/cifar10_full_prec.pt")
+            torch.save(model.state_dict(), "tmp_models/" + str(args.save) + "_full_prec.pt")
         else:
-            torch.save(model.state_dict(), "tmp_models/cifar10_full_prec_no_cuda.pt")
+            torch.save(model.state_dict(), "tmp_models/" + str(args.save) + "_full_prec_no_cuda.pt")
     else:
-        torch.save(model.state_dict(), "tmp_models/cifar10_cnn.pt")
+        torch.save(model.state_dict(), "tmp_models/" + str(args.save) + "_cnn.pt")
 
 if __name__ == '__main__':
     main()
