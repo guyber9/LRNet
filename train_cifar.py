@@ -30,8 +30,8 @@ class FPNet_CIFAR10(nn.Module):
         self.dropout2 = nn.Dropout(0.5)
         self.fc1 = nn.Linear(8192, 1024)
         self.fc2 = nn.Linear(1024, 10)
-        self.dropout3 = nn.Dropout(0.3)
-        self.dropout4 = nn.Dropout(0.3)
+        # self.dropout3 = nn.Dropout(0.3)
+        # self.dropout4 = nn.Dropout(0.3)
 
     def forward(self, x):
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 3 
@@ -41,7 +41,7 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn2(x)
         x = F.max_pool2d(x, 2) # 128 x 16 x 16
         x = F.relu(x)
-        x = self.dropout3(x)
+        # x = self.dropout3(x)
 
         x = self.conv3(x)  # 256 x 16 x 16
         x = self.bn3(x)
@@ -50,7 +50,7 @@ class FPNet_CIFAR10(nn.Module):
         x = self.bn4(x)
         x = F.max_pool2d(x, 2) # 256 x 8 x 8
         x = F.relu(x)
-        x = self.dropout4(x)
+        # x = self.dropout4(x)
 
         x = self.conv5(x)  # 512 x 8 x 8
         x = self.bn5(x)
@@ -234,8 +234,10 @@ def main():
         #                       momentum=0.9, weight_decay=5e-4)
         # optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
 
-        optimizer = optim.Adam(model.parameters(), lr=args.lr)
+        # optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
+        optimizer = optim.SGD(model.parameters(), lr=args.lr,
+                              momentum=0.9, weight_decay=1e-4)
         # optimizer = optim.Adam([
         #     {'params': model.conv1.parameters(), 'weight_decay': 1e-11},
         #     {'params': model.conv2.parameters(), 'weight_decay': 1e-11},
