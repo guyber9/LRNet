@@ -226,7 +226,7 @@ def main():
         model = FPNet_CIFAR10().to(device)
         # optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
         optimizer = optim.SGD(model.parameters(), lr=args.lr,
-                              momentum=0.9, weight_decay=1e-2)
+                              momentum=0.9, weight_decay=5e-4)
     else:
         print ("Training LRNet")
         model = LRNet_CIFAR10().to(device)
