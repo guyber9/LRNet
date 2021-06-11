@@ -279,6 +279,11 @@ def main():
 
         model.conv1.bias = test_model.conv1.bias
         model.conv2.bias = test_model.conv2.bias
+        model.conv3.bias = test_model.conv1.bias
+        model.conv4.bias = test_model.conv2.bias
+        model.conv5.bias = test_model.conv1.bias
+        model.conv6.bias = test_model.conv2.bias
+
         # model.fc1.weight = test_model.fc1.weight
         # model.fc1.bias = test_model.fc1.bias
         # model.fc2.weight = test_model.fc2.weight
