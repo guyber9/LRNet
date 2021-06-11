@@ -277,12 +277,12 @@ def main():
         model.conv5.initialize_weights(alpha5, betta5)
         model.conv6.initialize_weights(alpha6, betta6)
 
-        model.conv1.bias = test_model.conv1.bias
-        model.conv2.bias = test_model.conv2.bias
-        model.conv3.bias = test_model.conv3.bias
-        model.conv4.bias = test_model.conv4.bias
-        model.conv5.bias = test_model.conv5.bias
-        model.conv6.bias = test_model.conv6.bias
+        # model.conv1.bias = test_model.conv1.bias
+        # model.conv2.bias = test_model.conv2.bias
+        # model.conv3.bias = test_model.conv3.bias
+        # model.conv4.bias = test_model.conv4.bias
+        # model.conv5.bias = test_model.conv5.bias
+        # model.conv6.bias = test_model.conv6.bias
 
         # model.fc1.weight = test_model.fc1.weight
         # model.fc1.bias = test_model.fc1.bias
