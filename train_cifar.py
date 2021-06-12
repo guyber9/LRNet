@@ -183,6 +183,10 @@ def main():
     parser.add_argument('--save', action='store', default='tmp_models/cifar10',
                         help='name of saved model')
 
+    parser.add_argument('--bias', action='store_true', default=False, help='initial bias')
+    parser.add_argument('--sgd', action='store_true', default=False, help='run with sgd')
+    parser.add_argument('--sched', action='store_true', default=False, help='another sched')
+
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
 
@@ -234,7 +238,10 @@ def main():
         #                       momentum=0.9, weight_decay=5e-4)
         # optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
 
-        optimizer = optim.Adam(model.parameters(), lr=args.lr)
+        if args.sgd:
+            optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
+        else:
+            optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
         # optimizer = optim.SGD(model.parameters(), lr=args.lr,
         #                       momentum=0.9, weight_decay=1e-2)
@@ -277,12 +284,13 @@ def main():
         model.conv5.initialize_weights(alpha5, betta5)
         model.conv6.initialize_weights(alpha6, betta6)
 
-        # model.conv1.bias = test_model.conv1.bias
-        # model.conv2.bias = test_model.conv2.bias
-        # model.conv3.bias = test_model.conv3.bias
-        # model.conv4.bias = test_model.conv4.bias
-        # model.conv5.bias = test_model.conv5.bias
-        # model.conv6.bias = test_model.conv6.bias
+        if args.bias:
+            model.conv1.bias = test_model.conv1.bias
+            model.conv2.bias = test_model.conv2.bias
+            model.conv3.bias = test_model.conv3.bias
+            model.conv4.bias = test_model.conv4.bias
+            model.conv5.bias = test_model.conv5.bias
+            model.conv6.bias = test_model.conv6.bias
 
         # model.fc1.weight = test_model.fc1.weight
         # model.fc1.bias = test_model.fc1.bias
@@ -310,8 +318,11 @@ def main():
     if args.full_prec:
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
     else:
-        scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
-        # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+        if args.sched:
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+        else:
+            scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+            # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
     file_name = str(args.save) + ".log"
     f = open(file_name, "w")
@@ -325,7 +336,7 @@ def main():
         if ((epoch % 30) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
             # torch.save(model.state_dict(), "tmp_models/cifar10_interim_model.pt")
-            my.test(model, device, train_loader, False)
+            my.test(model, device, train_loader, False, f)
         scheduler.step()
 
     f.close()

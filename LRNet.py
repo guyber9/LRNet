@@ -519,7 +519,7 @@ def train(args, model, device, train_loader, optimizer, epoch, f):
             if args.dry_run:
                 break
 
-def test(model, device, test_loader, test_mode):
+def test(model, device, test_loader, test_mode, f=None):
     if test_mode:
         tstring = 'Test'
     else:
@@ -541,6 +541,10 @@ def test(model, device, test_loader, test_mode):
     print('\n' + str(tstring) +' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
+    if f is not None:
+        print('\n' + str(tstring) + ' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+            test_loss, correct, len(test_loader.dataset),
+            100. * correct / len(test_loader.dataset)), file = f)
     return (100. * correct / len(test_loader.dataset))
 
 
