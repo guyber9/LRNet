@@ -313,10 +313,13 @@ def main():
         scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
         # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
+    file_name = str(args.save) + ".log"
+    f = open(file_name, "w")
+
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
         # with torch.cuda.amp.autocast():
-        my.train(args, model, device, train_loader, optimizer, epoch)
+        my.train(args, model, device, train_loader, optimizer, epoch, f)
         print('{} seconds'.format(time.time() - t0))
         my.test(model, device, test_loader, True)
         if ((epoch % 30) == 0) or (epoch == args.epochs):
@@ -324,6 +327,8 @@ def main():
             # torch.save(model.state_dict(), "tmp_models/cifar10_interim_model.pt")
             my.test(model, device, train_loader, False)
         scheduler.step()
+
+    f.close()
 
     if args.full_prec:
         if use_cuda:
