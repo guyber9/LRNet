@@ -332,7 +332,7 @@ def main():
         # with torch.cuda.amp.autocast():
         my.train(args, model, device, train_loader, optimizer, epoch, f)
         print('{} seconds'.format(time.time() - t0))
-        my.test(model, device, test_loader, True)
+        my.test(model, device, test_loader, True, f)
         if ((epoch % 30) == 0) or (epoch == args.epochs):
             print("Accuracy on train data:")
             # torch.save(model.state_dict(), "tmp_models/cifar10_interim_model.pt")
