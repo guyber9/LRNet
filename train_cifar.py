@@ -182,6 +182,12 @@ def main():
                         help='num_workers (default: 1)')
     parser.add_argument('--save', action='store', default='tmp_models/cifar10',
                         help='name of saved model')
+    parser.add_argument('--num', type=int, default=4, metavar='N',
+                        help='how many batches to wait before logging training status')
+    parser.add_argument('--wd', type=int, default=4, metavar='N',
+                        help='wd is 10**((-1)*wd)')
+    parser.add_argument('--pd', type=int, default=4, metavar='N',
+                        help='pd is 10**((-1)*pd)')
 
     parser.add_argument('--bias', action='store_true', default=False, help='initial bias')
     parser.add_argument('--sgd', action='store_true', default=False, help='run with sgd')
