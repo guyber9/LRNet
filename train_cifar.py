@@ -192,6 +192,7 @@ def main():
     parser.add_argument('--bias', action='store_true', default=False, help='initial bias')
     parser.add_argument('--sgd', action='store_true', default=False, help='run with sgd')
     parser.add_argument('--sched', action='store_true', default=False, help='another sched')
+    parser.add_argument('--fc', action='store_true', default=False, help='initial fc')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -290,19 +291,23 @@ def main():
         model.conv5.initialize_weights(alpha5, betta5)
         model.conv6.initialize_weights(alpha6, betta6)
 
-        if args.bias:
-            model.conv1.bias = test_model.conv1.bias
-            model.conv2.bias = test_model.conv2.bias
-            model.conv3.bias = test_model.conv3.bias
-            model.conv4.bias = test_model.conv4.bias
-            model.conv5.bias = test_model.conv5.bias
-            model.conv6.bias = test_model.conv6.bias
+        def normalize_layer(w):
+            return nn.Parameter(w / torch.srd(w))
 
-        # model.fc1.weight = test_model.fc1.weight
-        # model.fc1.bias = test_model.fc1.bias
-        # model.fc2.weight = test_model.fc2.weight
-        # model.fc2.bias = test_model.fc2.bias
-        #
+        if args.bias:
+            model.conv1.bias = normalize_layer(test_model.conv1.bias)
+            model.conv2.bias = normalize_layer(test_model.conv2.bias)
+            model.conv3.bias = normalize_layer(test_model.conv3.bias)
+            model.conv4.bias = normalize_layer(test_model.conv4.bias)
+            model.conv5.bias = normalize_layer(test_model.conv5.bias)
+            model.conv6.bias = normalize_layer(test_model.conv6.bias)
+
+        if args.fc:
+            model.fc1.weight = normalize_layer(test_model.fc1.weight)
+            model.fc1.bias = normalize_layer(test_model.fc1.bias)
+            model.fc2.weight = normalize_layer(test_model.fc2.weight)
+            model.fc2.bias = normalize_layer(test_model.fc2.bias)
+
         # # model.bn1.bias = test_model.bn1.bias
         # # model.bn1.weight = test_model.bn1.weight
         # # model.bn1.running_mean = test_model.bn1.running_mean
