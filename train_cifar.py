@@ -308,10 +308,10 @@ def main():
             model.conv6.bias = normalize_layer(test_model.conv6.bias)
 
         if args.fc:
-            model.fc1.weight = normalize_layer(test_model.fc1.weight)
-            model.fc1.bias = normalize_layer(test_model.fc1.bias)
-            model.fc2.weight = normalize_layer(test_model.fc2.weight)
-            model.fc2.bias = normalize_layer(test_model.fc2.bias)
+            model.fc1.weight = test_model.fc1.weight
+            model.fc1.bias = test_model.fc1.bias
+            model.fc2.weight = test_model.fc2.weight
+            model.fc2.bias = test_model.fc2.bias
 
         if args.bn:
             model.bn1.bias = test_model.bn1.bias
