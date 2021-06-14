@@ -292,7 +292,7 @@ def main():
         model.conv6.initialize_weights(alpha6, betta6)
 
         def normalize_layer(w):
-            return nn.Parameter(w / torch.srd(w))
+            return nn.Parameter(w / torch.std(w))
 
         if args.bias:
             model.conv1.bias = normalize_layer(test_model.conv1.bias)
