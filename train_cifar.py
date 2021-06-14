@@ -194,6 +194,7 @@ def main():
     parser.add_argument('--sched', action='store_true', default=False, help='another sched')
     parser.add_argument('--fc', action='store_true', default=False, help='initial fc')
     parser.add_argument('--bn', action='store_true', default=False, help='initial batch norm')
+    parser.add_argument('--norm', action='store_true', default=False, help='norm init layer')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -293,7 +294,10 @@ def main():
         model.conv6.initialize_weights(alpha6, betta6)
 
         def normalize_layer(w):
-            return nn.Parameter(w / torch.std(w))
+            if args.norm:
+                return nn.Parameter(w / torch.std(w))
+            else:
+                return w
 
         if args.bias:
             model.conv1.bias = normalize_layer(test_model.conv1.bias)
