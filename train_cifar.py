@@ -193,6 +193,7 @@ def main():
     parser.add_argument('--sgd', action='store_true', default=False, help='run with sgd')
     parser.add_argument('--sched', action='store_true', default=False, help='another sched')
     parser.add_argument('--fc', action='store_true', default=False, help='initial fc')
+    parser.add_argument('--bn', action='store_true', default=False, help='initial batch norm')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
@@ -308,15 +309,16 @@ def main():
             model.fc2.weight = normalize_layer(test_model.fc2.weight)
             model.fc2.bias = normalize_layer(test_model.fc2.bias)
 
-        # # model.bn1.bias = test_model.bn1.bias
-        # # model.bn1.weight = test_model.bn1.weight
-        # # model.bn1.running_mean = test_model.bn1.running_mean
-        # # model.bn1.running_var = test_model.bn1.running_var
-        # #
-        # # model.bn2.bias = test_model.bn2.bias
-        # # model.bn2.weight = test_model.bn2.weight
-        # # model.bn2.running_mean = test_model.bn2.running_mean
-        # # model.bn2.running_var = test_model.bn2.running_var
+        if args.bn:
+            model.bn1.bias = test_model.bn1.bias
+            model.bn1.weight = test_model.bn1.weight
+            model.bn1.running_mean = test_model.bn1.running_mean
+            model.bn1.running_var = test_model.bn1.running_var
+
+            model.bn2.bias = test_model.bn2.bias
+            model.bn2.weight = test_model.bn2.weight
+            model.bn2.running_mean = test_model.bn2.running_mean
+            model.bn2.running_var = test_model.bn2.running_var
 
     if args.resume:
         print("Resume Model: LRNet")
