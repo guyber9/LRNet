@@ -46,6 +46,10 @@ def main():
                         help='parallel-gpu (default: 1)')
     parser.add_argument('--num-workers', type=int, default=1, metavar='N',
                         help='num_workers (default: 1)')
+    parser.add_argument('--wd', type=int, default=4, metavar='N',
+                        help='wd is 10**((-1)*wd)')
+    parser.add_argument('--pd', type=int, default=11, metavar='N',
+                        help='pd is 10**((-1)*pd)')
 
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
