@@ -484,13 +484,17 @@ def train(args, model, device, train_loader, optimizer, epoch, f):
             else:
                 # loss = F.cross_entropy(output, target)
                 ce_loss = F.cross_entropy(output, target)
-                loss = ce_loss + probability_decay * (torch.norm(model.conv1.alpha, 2) + torch.norm(model.conv1.betta, 2)
-                                                 + torch.norm(model.conv2.alpha, 2) + torch.norm(model.conv2.betta, 2)
-                                                 + torch.norm(model.conv3.alpha, 2) + torch.norm(model.conv3.betta, 2)
-                                                 + torch.norm(model.conv4.alpha, 2) + torch.norm(model.conv4.betta, 2)
-                                                 + torch.norm(model.conv5.alpha, 2) + torch.norm(model.conv5.betta, 2)
+                loss = ce_loss + probability_decay * (torch.norm(model.conv1.alpha, 2) + torch.norm(model.conv1.betta, 2) \
+                                                 + torch.norm(model.conv2.alpha, 2) + torch.norm(model.conv2.betta, 2) \
+                                                 + torch.norm(model.conv3.alpha, 2) + torch.norm(model.conv3.betta, 2) \
+                                                 + torch.norm(model.conv4.alpha, 2) + torch.norm(model.conv4.betta, 2) \
+                                                 + torch.norm(model.conv5.alpha, 2) + torch.norm(model.conv5.betta, 2) \
                                                  + torch.norm(model.conv6.alpha, 2) + torch.norm(model.conv6.betta, 2)) \
-                                                 + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
+                                                  + weight_decay * (torch.norm(model.conv1.bias, 2)  + torch.norm(model.conv2.bias, 2) \
+                                                   + torch.norm(model.conv3.bias, 2) + torch.norm(model.conv4.bias, 2) \
+                                                 + torch.norm(model.conv5.bias, 2) + torch.norm(model.conv6.bias, 2)) \
+                                                     + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)
+                                                                   + torch.norm(model.fc1.bias, 2) + torch.norm(model.fc1.bias, 2))
         else:
             if args.full_prec:
                 loss = F.cross_entropy(output, target)
