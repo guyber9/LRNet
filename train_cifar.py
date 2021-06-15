@@ -270,7 +270,7 @@ def main():
 
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
-    if args.load_pre_trained:
+    if args.load_pre_trained and not args.resume:
         test_model = FPNet_CIFAR10().to(device)
         if use_cuda:
             test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec.pt'))
@@ -326,7 +326,7 @@ def main():
 
     if args.resume:
         print("Resume Model: LRNet")
-        model.load_state_dict(torch.load('tmp_models/cifar10_cnn.pt'))
+        model.load_state_dict(torch.load('saved_model/best_cifar10_cnn.pt'))
 
     print ("###################################")
     print ("training..")
