@@ -484,6 +484,7 @@ def train(args, model, device, train_loader, optimizer, epoch, f):
             else:
                 # loss = F.cross_entropy(output, target)
                 ce_loss = 0.0
+                print(output)
                 loss = F.cross_entropy(output, target)
                 ce_loss = loss
                 # loss = ce_loss + probability_decay * (torch.norm(model.conv1.alpha, 2) + torch.norm(model.conv1.betta, 2) \
