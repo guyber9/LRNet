@@ -449,7 +449,7 @@ class mySigmConv2d(nn.Module):
             # utils.print_full_tensor(v, "v")
             return m + epsilon * v
 
-def train(args, model, device, train_loader, optimizer, epoch, f):
+def train(args, model, device, train_loader, optimizer, epoch, f=None):
     model.train()
     weight_decay = 10**((-1)*args.wd) # 1e-4
     probability_decay = 10**((-1)*args.pd) # 1e-11
@@ -515,6 +515,7 @@ def train(args, model, device, train_loader, optimizer, epoch, f):
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tce_loss: {:.6f}\tloss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), ce_loss.item(), loss.item()))
+        if f is not None:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tce_loss: {:.6f}\tloss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                        100. * batch_idx / len(train_loader), ce_loss.item(), loss.item()), file = f)
