@@ -453,26 +453,29 @@ def train(args, model, device, train_loader, optimizer, epoch, f):
     model.train()
     weight_decay = 10**((-1)*args.wd) # 1e-4
     probability_decay = 10**((-1)*args.pd) # 1e-11
+    print("weight_decay: " + str(weight_decay))
+    print("probability_decay: " + str(probability_decay))
     # torch.backends.cudnn.benchmark = True
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = data.to(device), target.to(device)
-        if args.parallel_gpu == 0:
-            parallel_net = model
-        elif args.parallel_gpu == 1:
-            parallel_net = nn.DataParallel(model, device_ids=[0])
-        elif args.parallel_gpu == 2:
-            parallel_net = nn.DataParallel(model, device_ids=[0, 1])
-        elif args.parallel_gpu == 3:
-            parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2])
-        elif args.parallel_gpu == 4:
-            parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
-        elif args.parallel_gpu == 5:
-            dist.init_process_group(backend='nccl', rank=2, world_size=3, init_method = None, store = None)
-            parallel_net = DDP(model, device_ids=[0, 1, 2], output_device=[0])
+        # if args.parallel_gpu == 0:
+        #     parallel_net = model
+        # elif args.parallel_gpu == 1:
+        #     parallel_net = nn.DataParallel(model, device_ids=[0])
+        # elif args.parallel_gpu == 2:
+        #     parallel_net = nn.DataParallel(model, device_ids=[0, 1])
+        # elif args.parallel_gpu == 3:
+        #     parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2])
+        # elif args.parallel_gpu == 4:
+        #     parallel_net = nn.DataParallel(model, device_ids=[0, 1, 2, 3])
+        # elif args.parallel_gpu == 5:
+        #     dist.init_process_group(backend='nccl', rank=2, world_size=3, init_method = None, store = None)
+        #     parallel_net = DDP(model, device_ids=[0, 1, 2], output_device=[0])
         # parallel_net = model
 
         # optimizer.zero_grad()
-        output = parallel_net(data)
+        # output = parallel_net(data)
+        output = model(data)
 
         # loss = F.cross_entropy(output, target) + weight_decay * (torch.norm(model.fc1.weight, 2) + torch.norm(model.fc2.weight, 2)) \
         #             + probability_decay * (torch.norm(model.conv1.weight_theta, 2) + torch.norm(model.conv2.weight_theta, 2))
@@ -484,7 +487,6 @@ def train(args, model, device, train_loader, optimizer, epoch, f):
             else:
                 # loss = F.cross_entropy(output, target)
                 ce_loss = 0.0
-                print(output)
                 loss = F.cross_entropy(output, target)
                 ce_loss = loss
                 # loss = ce_loss + probability_decay * (torch.norm(model.conv1.alpha, 2) + torch.norm(model.conv1.betta, 2) \
