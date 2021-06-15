@@ -186,7 +186,7 @@ def main():
                         help='how many batches to wait before logging training status')
     parser.add_argument('--wd', type=int, default=4, metavar='N',
                         help='wd is 10**((-1)*wd)')
-    parser.add_argument('--pd', type=int, default=4, metavar='N',
+    parser.add_argument('--pd', type=int, default=11, metavar='N',
                         help='pd is 10**((-1)*pd)')
 
     parser.add_argument('--bias', action='store_true', default=False, help='initial bias')
