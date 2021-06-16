@@ -103,6 +103,7 @@ class LRNet_CIFAR10(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
+        print("x1: " + str(x))
         # utils.print_full_tensor(x, "x1")
         x = self.bn1(x)
         # utils.print_full_tensor(x, "x_bn1")
@@ -133,6 +134,8 @@ class LRNet_CIFAR10(nn.Module):
         x = self.bn6(x)
         x = F.max_pool2d(x, 2)  # 512 x 4 x 4 (= 8192)
         x = F.relu(x)
+
+        print("x6: " + str(x))
 
         x = torch.flatten(x, 1)  # 8192
         x = self.dropout1(x)
