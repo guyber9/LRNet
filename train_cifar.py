@@ -103,7 +103,6 @@ class LRNet_CIFAR10(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
-        print("x1: " + str(x))
         # utils.print_full_tensor(x, "x1")
         x = self.bn1(x)
         # utils.print_full_tensor(x, "x_bn1")
