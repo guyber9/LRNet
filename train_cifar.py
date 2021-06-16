@@ -103,7 +103,7 @@ class LRNet_CIFAR10(nn.Module):
 
     def forward(self, x):
         x = self.conv1(x)  # input is 3 x 32 x 32, output is 128 x 32 x 32
-        utils.print_full_tensor(x, "x1")
+        # utils.print_full_tensor(x, "x1")
         x = self.bn1(x)
         # utils.print_full_tensor(x, "x_bn1")
         x = F.relu(x)
@@ -141,6 +141,7 @@ class LRNet_CIFAR10(nn.Module):
         x = self.dropout2(x)
         x = self.fc2(x)  # 1024 -> 10
         output = x
+        utils.print_full_tensor(output, "output")
         return output
 
 def main():
