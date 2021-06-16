@@ -325,25 +325,25 @@ def main():
             model.bn2.running_mean = test_model.bn2.running_mean
             model.bn2.running_var = test_model.bn2.running_var
 
-            model.bn3.bias = test_model.bn1.bias
-            model.bn3.weight = test_model.bn1.weight
-            model.bn3.running_mean = test_model.bn1.running_mean
-            model.bn3.running_var = test_model.bn1.running_var
+            model.bn3.bias = test_model.bn3.bias
+            model.bn3.weight = test_model.bn3.weight
+            model.bn3.running_mean = test_model.bn3.running_mean
+            model.bn3.running_var = test_model.bn3.running_var
 
-            model.bn4.bias = test_model.bn2.bias
-            model.bn4.weight = test_model.bn2.weight
-            model.bn4.running_mean = test_model.bn2.running_mean
-            model.bn4.running_var = test_model.bn2.running_var
+            model.bn4.bias = test_model.bn4.bias
+            model.bn4.weight = test_model.bn4.weight
+            model.bn4.running_mean = test_model.bn4.running_mean
+            model.bn4.running_var = test_model.bn4.running_var
 
-            model.bn5.bias = test_model.bn1.bias
-            model.bn5.weight = test_model.bn1.weight
-            model.bn5.running_mean = test_model.bn1.running_mean
-            model.bn5.running_var = test_model.bn1.running_var
+            model.bn5.bias = test_model.bn5.bias
+            model.bn5.weight = test_model.bn5.weight
+            model.bn5.running_mean = test_model.bn5.running_mean
+            model.bn5.running_var = test_model.bn5.running_var
 
-            model.bn6.bias = test_model.bn2.bias
-            model.bn6.weight = test_model.bn2.weight
-            model.bn6.running_mean = test_model.bn2.running_mean
-            model.bn6.running_var = test_model.bn2.running_var
+            model.bn6.bias = test_model.bn6.bias
+            model.bn6.weight = test_model.bn6.weight
+            model.bn6.running_mean = test_model.bn6.running_mean
+            model.bn6.running_var = test_model.bn6.running_var
 
     if args.resume:
         print("Resume Model: LRNet")
