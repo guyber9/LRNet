@@ -339,7 +339,6 @@ def main():
             scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
         else:
             scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
-            # scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
     file_name = str(args.save) + ".log"
     f = open(file_name, "w")

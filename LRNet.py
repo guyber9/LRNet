@@ -473,7 +473,7 @@ def train(args, model, device, train_loader, optimizer, epoch, f=None):
         #     parallel_net = DDP(model, device_ids=[0, 1, 2], output_device=[0])
         # parallel_net = model
 
-        # optimizer.zero_grad()
+        optimizer.zero_grad()
         # output = parallel_net(data)
         output = model(data)
 
@@ -502,9 +502,7 @@ def train(args, model, device, train_loader, optimizer, epoch, f=None):
                                                                + torch.norm(model.conv1.betta, 2)
                                                                + torch.norm(model.conv2.alpha, 2)
                                                                + torch.norm(model.conv2.betta, 2)) + weight_decay * (torch.norm(model.fc1.weight, 2) + (torch.norm(model.fc2.weight, 2)))
-                ce_loss = loss
-
-        optimizer.zero_grad()
+        # optimizer.zero_grad()
 
         if args.debug_mode:
             torch.autograd.set_detect_anomaly(True)
