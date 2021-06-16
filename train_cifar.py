@@ -141,7 +141,7 @@ class LRNet_CIFAR10(nn.Module):
         x = self.dropout2(x)
         x = self.fc2(x)  # 1024 -> 10
         output = x
-        utils.print_full_tensor(output, "output")
+        print("output: " + str(output))
         return output
 
 def main():
