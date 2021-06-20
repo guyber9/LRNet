@@ -272,12 +272,13 @@ def main():
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
     if args.load_pre_trained and not args.resume:
+        print ("Loading Model")
         test_model = FPNet_CIFAR10().to(device)
         if use_cuda:
             test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec.pt'))
         else:
             test_model.load_state_dict(torch.load('tmp_models/cifar10_full_prec_no_cuda.pt'))
-        test_model.eval()
+        # test_model.eval()
         # state_dict = torch.load('tmp_models/cifar10_full_prec.pt')
 
         alpha1, betta1 = my.find_sigm_weights(test_model.conv1.weight, False)
@@ -317,33 +318,33 @@ def main():
         if args.bn:
             model.bn1.bias = test_model.bn1.bias
             model.bn1.weight = test_model.bn1.weight
-            model.bn1.running_mean = test_model.bn1.running_mean
-            model.bn1.running_var = test_model.bn1.running_var
+            # model.bn1.running_mean = test_model.bn1.running_mean
+            # model.bn1.running_var = test_model.bn1.running_var
 
             model.bn2.bias = test_model.bn2.bias
             model.bn2.weight = test_model.bn2.weight
-            model.bn2.running_mean = test_model.bn2.running_mean
-            model.bn2.running_var = test_model.bn2.running_var
+            # model.bn2.running_mean = test_model.bn2.running_mean
+            # model.bn2.running_var = test_model.bn2.running_var
 
             model.bn3.bias = test_model.bn3.bias
             model.bn3.weight = test_model.bn3.weight
-            model.bn3.running_mean = test_model.bn3.running_mean
-            model.bn3.running_var = test_model.bn3.running_var
+            # model.bn3.running_mean = test_model.bn3.running_mean
+            # model.bn3.running_var = test_model.bn3.running_var
 
             model.bn4.bias = test_model.bn4.bias
             model.bn4.weight = test_model.bn4.weight
-            model.bn4.running_mean = test_model.bn4.running_mean
-            model.bn4.running_var = test_model.bn4.running_var
+            # model.bn4.running_mean = test_model.bn4.running_mean
+            # model.bn4.running_var = test_model.bn4.running_var
 
             model.bn5.bias = test_model.bn5.bias
             model.bn5.weight = test_model.bn5.weight
-            model.bn5.running_mean = test_model.bn5.running_mean
-            model.bn5.running_var = test_model.bn5.running_var
+            # model.bn5.running_mean = test_model.bn5.running_mean
+            # model.bn5.running_var = test_model.bn5.running_var
 
             model.bn6.bias = test_model.bn6.bias
             model.bn6.weight = test_model.bn6.weight
-            model.bn6.running_mean = test_model.bn6.running_mean
-            model.bn6.running_var = test_model.bn6.running_var
+            # model.bn6.running_mean = test_model.bn6.running_mean
+            # model.bn6.running_var = test_model.bn6.running_var
 
     if args.resume:
         print("Resume Model: LRNet")
