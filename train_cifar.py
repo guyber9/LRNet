@@ -358,7 +358,10 @@ def main():
     print ("num of epochs: " + str(args.epochs))
     print ("###################################")
     if args.full_prec:
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+        if args.sched:
+            scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
+        else:
+            scheduler = StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
     else:
         if args.sched:
             scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
