@@ -61,10 +61,10 @@ class FPNet_CIFAR10(nn.Module):
         x = F.relu(x)
 
         x = torch.flatten(x, 1) # 8192
-        x = self.dropout1(x)
+        # x = self.dropout1(x)
         x = self.fc1(x)  # 8192 -> 1024
         x = F.relu(x)
-        x = self.dropout2(x)
+        # x = self.dropout2(x)
         x = self.fc2(x) # 1024 -> 10
         output = x
         return output
@@ -179,8 +179,8 @@ def main():
     parser.add_argument('--resume', action='store_true', default=False, help='resume model flag')
     parser.add_argument('--parallel-gpu', type=int, default=1, metavar='N',
                         help='parallel-gpu (default: 1)')
-    parser.add_argument('--num-workers', type=int, default=1, metavar='N',
-                        help='num_workers (default: 1)')
+    parser.add_argument('--num-workers', type=int, default=4, metavar='N',
+                        help='num_workers (default: 4)')
     parser.add_argument('--save', action='store', default='tmp_models/cifar10',
                         help='name of saved model')
     parser.add_argument('--num', type=int, default=4, metavar='N',
@@ -349,9 +349,37 @@ def main():
             # model.bn6.running_mean = test_model.bn6.running_mean
             # model.bn6.running_var = test_model.bn6.running_var
 
-    if args.resume:
-        print("Resume Model: LRNet")
+    if args.resume and not args.load_pre_trained:
+        print("Resume Model: LRNet  (if args.resume and not args.load_pre_trained)")
         model.load_state_dict(torch.load('saved_model/best_cifar10_cnn.pt'))
+
+    if args.load_pre_trained and args.resume:
+        print("if args.load_pre_trained and args.resume")
+        test_model = LRNet_CIFAR10().to(device)
+        test_model.load_state_dict(torch.load('saved_model/best_cifar10_cnn.pt'))
+        model.conv1.alpha = test_model.conv1.alpha
+        model.conv1.betta = test_model.conv1.betta
+        model.conv1.bias = test_model.conv1.bias
+
+        model.conv2.alpha = test_model.conv2.alpha
+        model.conv2.betta = test_model.conv2.betta
+        model.conv2.bias = test_model.conv2.bias
+
+        model.conv3.alpha = test_model.conv3.alpha
+        model.conv3.betta = test_model.conv3.betta
+        model.conv3.bias = test_model.conv3.bias
+
+        model.conv4.alpha = test_model.conv4.alpha
+        model.conv4.betta = test_model.conv4.betta
+        model.conv4.bias = test_model.conv4.bias
+
+        model.conv5.alpha = test_model.conv5.alpha
+        model.conv5.betta = test_model.conv5.betta
+        model.conv5.bias = test_model.conv5.bias
+
+        model.conv6.alpha = test_model.conv6.alpha
+        model.conv6.betta = test_model.conv6.betta
+        model.conv6.bias = test_model.conv6.bias
 
     print ("###################################")
     print ("training..")
