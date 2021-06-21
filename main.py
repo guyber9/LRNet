@@ -93,7 +93,7 @@ if args.resume:
 criterion = nn.CrossEntropyLoss()
 if args.adam:
     optimizer = optim.Adam(net.parameters(), lr=args.lr)
-    scheduler = torch.optim.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
 else:
     optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
