@@ -20,6 +20,10 @@ parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--resume', '-r', action='store_true',
                     help='resume from checkpoint')
 parser.add_argument('--adam', action='store_true', default=False, help='run with adam')
+parser.add_argument('--gamma', type=float, default=0.1, metavar='M',
+                    help='Learning rate step gamma (default: 0.1)')
+parser.add_argument('--step-size', type=int, default=100, metavar='M',
+                    help='Step size for scheduler (default: 100)')
 
 args = parser.parse_args()
 
@@ -89,7 +93,7 @@ if args.resume:
 criterion = nn.CrossEntropyLoss()
 if args.adam:
     optimizer = optim.Adam(net.parameters(), lr=args.lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer)
+    scheduler = torch.optim.StepLR(optimizer, step_size=args.step_size, gamma=args.gamma)
 else:
     optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
