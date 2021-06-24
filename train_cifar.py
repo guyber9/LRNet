@@ -271,7 +271,6 @@ def main():
 
         # optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=0.9)
 
-
     # optimizer = optim.Adadelta(model.parameters(), lr=args.lr)
 
     if args.load_pre_trained and not args.resume:
@@ -353,6 +352,11 @@ def main():
         print("Resume Model: LRNet  (if args.resume and not args.load_pre_trained)")
         model.load_state_dict(torch.load('saved_model/best_cifar10_cnn.pt'))
 
+    # for name, param in model.named_parameters():
+    #     if param.requires_grad:
+    #         print (name, param.data)
+    # exit(1)
+
     if args.load_pre_trained and args.resume:
         print("if args.load_pre_trained and args.resume")
         test_model = LRNet_CIFAR10().to(device)
@@ -402,6 +406,8 @@ def main():
     for epoch in range(1, args.epochs + 1):
         t0 = time.time()
         # with torch.cuda.amp.autocast():
+        print(epoch)
+        utils.print_full_tensor(model.conv1.alpha, "model.conv1.alpha")
         my.train(args, model, device, train_loader, optimizer, epoch, f)
         print('{} seconds'.format(time.time() - t0))
         my.test(model, device, test_loader, True, f)
